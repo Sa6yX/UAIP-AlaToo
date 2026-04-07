@@ -16,7 +16,6 @@ function getTeacherInitial(teacher: string) {
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [showTopFade, setShowTopFade] = useState(false);
   const [showBottomFade, setShowBottomFade] = useState(false);
 
   useEffect(() => {
@@ -33,7 +32,6 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     const updateFadeState = () => {
       const hasOverflow = element.scrollHeight - element.clientHeight > 4;
 
-      setShowTopFade(hasOverflow && element.scrollTop > 2);
       setShowBottomFade(
         hasOverflow && element.scrollTop + element.clientHeight < element.scrollHeight - 2,
       );
@@ -188,11 +186,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
         <div
           aria-hidden
-          className={`pointer-events-none absolute inset-x-0 top-0 h-12 rounded-t-[18px] bg-gradient-to-b from-white to-transparent transition-opacity duration-200 ${showTopFade ? "opacity-100" : "opacity-0"}`}
-        />
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-12 rounded-b-[18px] bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ${showBottomFade ? "opacity-100" : "opacity-0"}`}
+          className={`pointer-events-none absolute inset-x-0 bottom-0 h-[84px] rounded-b-[18px] bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ${showBottomFade ? "opacity-100" : "opacity-0"}`}
         />
       </div>
     </div>
