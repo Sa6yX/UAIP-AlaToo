@@ -11,6 +11,8 @@ export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [showPageTopFade, setShowPageTopFade] = useState(false);
+  const [showPageBottomFade, setShowPageBottomFade] = useState(false);
 
   useEffect(() => {
     if (!selectedCourse) {
@@ -42,6 +44,28 @@ export function CourseCatalog() {
     };
   }, [selectedCourse]);
 
+  useEffect(() => {
+    const updatePageFadeState = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const viewportHeight = window.innerHeight;
+      const fullHeight = document.documentElement.scrollHeight;
+      const canScroll = fullHeight > viewportHeight + 4;
+
+      setShowPageTopFade(canScroll && scrollTop > 2);
+      setShowPageBottomFade(canScroll && scrollTop + viewportHeight < fullHeight - 2);
+    };
+
+    updatePageFadeState();
+
+    window.addEventListener("scroll", updatePageFadeState, { passive: true });
+    window.addEventListener("resize", updatePageFadeState);
+
+    return () => {
+      window.removeEventListener("scroll", updatePageFadeState);
+      window.removeEventListener("resize", updatePageFadeState);
+    };
+  }, [activeDept, search]);
+
   const filteredCourses = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
@@ -67,6 +91,14 @@ export function CourseCatalog() {
 
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
+      <div
+        aria-hidden
+        className={`pointer-events-none fixed inset-x-0 top-0 z-40 hidden h-12 bg-gradient-to-b from-[var(--uaip-bg)] to-transparent transition-opacity duration-200 lg:block ${showPageTopFade ? "opacity-100" : "opacity-0"}`}
+      />
+      <div
+        aria-hidden
+        className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 hidden h-12 bg-gradient-to-t from-[var(--uaip-bg)] to-transparent transition-opacity duration-200 lg:block ${showPageBottomFade ? "opacity-100" : "opacity-0"}`}
+      />
       <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-start justify-between gap-3">
           <div>

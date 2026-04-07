@@ -16,8 +16,6 @@
   --uaip-green: #059669;
   --uaip-amber: #d97706;
   --uaip-red: #dc2626;
-  --uaip-scroll-thumb: #c6ceda;
-  --uaip-scroll-thumb-hover: #a9b3c4;
 }
 
 @theme inline {
@@ -38,6 +36,12 @@ body {
 
 html {
   scrollbar-gutter: stable;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -54,53 +58,22 @@ body {
   line-height: 1.5;
 }
 
-@media (min-width: 1024px) {
-  body {
-    scrollbar-width: thin;
-    scrollbar-color: var(--uaip-scroll-thumb) transparent;
-  }
+body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
 
-  body::-webkit-scrollbar {
-    width: 10px;
-  }
-
-  body::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  body::-webkit-scrollbar-thumb {
-    border: 3px solid transparent;
-    border-radius: 999px;
-    background: var(--uaip-scroll-thumb);
-    background-clip: content-box;
-  }
-
-  body::-webkit-scrollbar-thumb:hover {
-    background: var(--uaip-scroll-thumb-hover);
-    background-clip: content-box;
-  }
+body::-webkit-scrollbar {
+  display: none;
 }
 
 .uaip-modal-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #b8c1d1 transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .uaip-modal-scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.uaip-modal-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.uaip-modal-scroll::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: #b8c1d1;
-}
-
-.uaip-modal-scroll::-webkit-scrollbar-thumb:hover {
-  background: #a6b0c0;
+  display: none;
 }
 
 .font-heading {
