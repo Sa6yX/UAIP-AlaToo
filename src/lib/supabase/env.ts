@@ -1,16 +1,27 @@
-function getRequiredEnv(name: string) {
-  const value = process.env[name];
+type SupabaseEnv = {
+  url: string;
+  publishableKey: string;
+};
 
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
+export function getSupabaseEnv(): SupabaseEnv | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!url || !publishableKey) {
+    return null;
   }
 
-  return value;
+  return { url, publishableKey };
 }
 
-export function getSupabaseEnv() {
-  return {
-    url: getRequiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
-    publishableKey: getRequiredEnv("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"),
-  };
+export function requireSupabaseEnv(): SupabaseEnv {
+  const env = getSupabaseEnv();
+
+  if (!env) {
+    throw new Error(
+      "Missing NEXT_PUBLIC_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY. Add them to .env.local.",
+    );
+  }
+
+  return env;
 }

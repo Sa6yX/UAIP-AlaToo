@@ -10,7 +10,13 @@ export async function updateSession(request: NextRequest) {
     request,
   });
 
-  const { url, publishableKey } = getSupabaseEnv();
+  const env = getSupabaseEnv();
+
+  if (!env) {
+    return response;
+  }
+
+  const { url, publishableKey } = env;
 
   const supabase = createServerClient<Database>(url, publishableKey, {
     cookies: {
