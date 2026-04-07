@@ -5,13 +5,14 @@ import { useEffect, useMemo, useState } from "react";
 import { COURSES, DEPARTMENTS, GRADE_SCALE } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
+import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter } from "./types";
 
 export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [showPageBottomFade, setShowPageBottomFade] = useState(false);
+  const [pageBottomFadeOpacity, setPageBottomFadeOpacity] = useState(0);
 
   useEffect(() => {
     if (!selectedCourse) {
@@ -48,9 +49,13 @@ export function CourseCatalog() {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const viewportHeight = window.innerHeight;
       const fullHeight = document.documentElement.scrollHeight;
-      const canScroll = fullHeight > viewportHeight + 4;
+      const scrollableDistance = Math.max(fullHeight - viewportHeight, 0);
+      const canScroll = scrollableDistance > 4;
+      const remainingBottomDistance = Math.max(scrollableDistance - scrollTop, 0);
 
-      setShowPageBottomFade(canScroll && scrollTop + viewportHeight < fullHeight - 2);
+      setPageBottomFadeOpacity(
+        canScroll ? getEdgeFadeOpacity(remainingBottomDistance, 108) : 0,
+      );
     };
 
     updatePageFadeState();
@@ -91,7 +96,8 @@ export function CourseCatalog() {
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
       <div
         aria-hidden
-        className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 hidden h-[76px] bg-gradient-to-t from-[var(--uaip-bg)] to-transparent transition-opacity duration-200 lg:block ${showPageBottomFade ? "opacity-100" : "opacity-0"}`}
+        className="pointer-events-none fixed inset-x-0 bottom-0 z-40 hidden h-[76px] bg-gradient-to-t from-[var(--uaip-bg)] to-transparent transition-opacity duration-150 lg:block"
+        style={{ opacity: pageBottomFadeOpacity }}
       />
       <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-start justify-between gap-3">

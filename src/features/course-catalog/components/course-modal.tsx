@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 import { DEPT_META, GRADE_SCALE, GRADING_COMPONENT_COLORS } from "../data";
+import { getEdgeFadeOpacity } from "../scroll-fade";
 import type { Course } from "../types";
 
 type CourseModalProps = {
@@ -18,8 +19,7 @@ function getTeacherInitial(teacher: string) {
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [showTopFade, setShowTopFade] = useState(false);
-  const [showBottomFade, setShowBottomFade] = useState(false);
+  const [fadeOpacity, setFadeOpacity] = useState({ top: 0, bottom: 0 });
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
 
   useEffect(() => {
@@ -34,13 +34,19 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     }
 
     const updateFadeState = () => {
-      const hasOverflow = element.scrollHeight - element.clientHeight > 4;
+      const overflowDistance = element.scrollHeight - element.clientHeight;
+      const hasOverflow = overflowDistance > 4;
       const isScrolled = element.scrollTop > 10;
+      const remainingBottomDistance = Math.max(overflowDistance - element.scrollTop, 0);
 
       setIsHeaderCondensed(isScrolled);
-      setShowTopFade(hasOverflow && element.scrollTop > 2);
-      setShowBottomFade(
-        hasOverflow && element.scrollTop + element.clientHeight < element.scrollHeight - 2,
+      setFadeOpacity(
+        hasOverflow
+          ? {
+              top: getEdgeFadeOpacity(element.scrollTop, 68),
+              bottom: getEdgeFadeOpacity(remainingBottomDistance, 96),
+            }
+          : { top: 0, bottom: 0 },
       );
     };
 
@@ -215,11 +221,13 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
           <div
             aria-hidden
-            className={`pointer-events-none absolute inset-x-0 top-0 h-[68px] bg-gradient-to-b from-white via-white/92 to-transparent transition-opacity duration-200 ${showTopFade ? "opacity-100" : "opacity-0"}`}
+            className="pointer-events-none absolute inset-x-0 top-0 h-[68px] bg-gradient-to-b from-white via-white/92 to-transparent transition-opacity duration-150"
+            style={{ opacity: fadeOpacity.top }}
           />
           <div
             aria-hidden
-            className={`pointer-events-none absolute inset-x-0 bottom-0 h-[96px] bg-gradient-to-t from-white via-white/94 to-transparent transition-opacity duration-200 ${showBottomFade ? "opacity-100" : "opacity-0"}`}
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[96px] bg-gradient-to-t from-white via-white/94 to-transparent transition-opacity duration-150"
+            style={{ opacity: fadeOpacity.bottom }}
           />
         </div>
       </div>
