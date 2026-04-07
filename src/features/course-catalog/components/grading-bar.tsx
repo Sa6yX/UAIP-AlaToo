@@ -8,10 +8,11 @@ type GradingBarProps = {
 export function GradingBar({ components }: GradingBarProps) {
   return (
     <div className="mt-3">
-      <div className="flex h-1.5 overflow-hidden rounded-sm">
+      <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-sm">
         {components.map((component, index) => (
           <div
             key={component.name}
+            className="rounded-[2px]"
             style={{
               width: `${component.weight}%`,
               backgroundColor: GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length],

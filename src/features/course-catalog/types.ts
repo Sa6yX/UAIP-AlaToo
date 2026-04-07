@@ -1,6 +1,21 @@
-export type Department = "AMI" | "CIF" | "CEH" | "Elective";
+export type Department =
+  | "MATMIE"
+  | "COMFCI"
+  | "COMCEH"
+  | "COMSE"
+  | "MATDAIS"
+  | "IEMIT"
+  | "Elective";
 
-export type DepartmentFilter = "All" | "AMI" | "CIF" | "CEH" | "Electives";
+export type DepartmentFilter =
+  | "All"
+  | "MATMIE"
+  | "COMFCI"
+  | "COMCEH"
+  | "COMSE"
+  | "MATDAIS"
+  | "IEMIT"
+  | "Electives";
 
 export type CourseComponent = {
   name: string;

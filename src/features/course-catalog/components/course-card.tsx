@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from "react";
+
 import { DEPT_META } from "../data";
 import type { Course } from "../types";
 
@@ -8,15 +10,44 @@ type CourseCardProps = {
   onSelect: (course: Course) => void;
 };
 
+function ArrowUpRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 16 16"
+      className="size-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 12L12 4" />
+      <path d="M6 4h6v6" />
+    </svg>
+  );
+}
+
 export function CourseCard({ course, onSelect }: CourseCardProps) {
   const dept = DEPT_META[course.dept];
   const hasMultipleTeachers = course.teachers.length > 1;
 
+  const handleOpen = () => onSelect(course);
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      handleOpen();
+    }
+  };
+
   return (
-    <button
-      type="button"
-      onClick={() => onSelect(course)}
-      className="group relative rounded-[14px] border border-[var(--uaip-gray-200)] bg-white px-5 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)]"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleOpen}
+      onKeyDown={handleKeyDown}
+      className="group relative cursor-pointer rounded-[14px] border border-[var(--uaip-gray-200)] bg-white px-5 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
       <div className="mb-2.5 flex items-start justify-between gap-3">
         <span
@@ -26,9 +57,22 @@ export function CourseCard({ course, onSelect }: CourseCardProps) {
           {course.dept === "Elective" ? "ELECTIVE" : course.dept}
         </span>
 
-        <span className="text-[0.6875rem] text-[var(--uaip-gray-400)]">
-          {course.credits} credits · {course.type}
-        </span>
+        <div className="flex items-start gap-2">
+          <span className="pt-1 text-[0.6875rem] text-[var(--uaip-gray-400)]">
+            {course.credits} credits · {course.type}
+          </span>
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              handleOpen();
+            }}
+            className="inline-flex items-center gap-1 rounded-full border border-[var(--uaip-gray-200)] bg-white px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-text-primary)] transition hover:border-[var(--uaip-gray-300)] hover:bg-[var(--uaip-gray-50)]"
+          >
+            OCS
+            <ArrowUpRightIcon />
+          </button>
+        </div>
       </div>
 
       <h3 className="font-heading text-[clamp(1.03rem,0.99rem+0.2vw,1.12rem)] font-bold text-[var(--uaip-text-primary)]">
@@ -46,11 +90,17 @@ export function CourseCard({ course, onSelect }: CourseCardProps) {
         )}
       </p>
 
-      <p className="mt-2.5 text-base leading-relaxed text-[var(--uaip-gray-600)]">
-        {course.description.slice(0, 112)}…
-      </p>
+      <div className="relative mt-2.5 overflow-hidden text-sm leading-[1.55] text-[var(--uaip-gray-600)]">
+        <p style={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}>
+          {course.description}
+        </p>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[55%] bg-gradient-to-r from-transparent via-white/88 to-white"
+        />
+      </div>
 
       <GradingBar components={course.components} />
-    </button>
+    </div>
   );
 }

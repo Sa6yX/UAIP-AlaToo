@@ -1,25 +1,52 @@
 import type { Course, Department, DepartmentFilter, DepartmentMeta, GradeScaleItem } from "./types";
 
-export const DEPARTMENTS: DepartmentFilter[] = ["All", "AMI", "CIF", "CEH", "Electives"];
+export const DEPARTMENTS: DepartmentFilter[] = [
+  "All",
+  "MATMIE",
+  "COMFCI",
+  "COMCEH",
+  "COMSE",
+  "MATDAIS",
+  "IEMIT",
+  "Electives",
+];
 
 export const DEPT_META: Record<Department, DepartmentMeta> = {
-  AMI: {
-    label: "Applied Math & Informatics",
+  MATMIE: {
+    label: "Mathematics & Informatics",
     color: "#2563eb",
     bg: "#eff6ff",
     text: "#1d4ed8",
   },
-  CIF: {
-    label: "Creative Industries Foundation",
+  COMFCI: {
+    label: "Foundations of Creative Industries",
     color: "#7c3aed",
     bg: "#f5f3ff",
     text: "#6d28d9",
   },
-  CEH: {
-    label: "Cybersec & Ethical Hacking",
+  COMCEH: {
+    label: "Cybersecurity & Ethical Hacking",
     color: "#059669",
     bg: "#ecfdf5",
     text: "#047857",
+  },
+  COMSE: {
+    label: "Computer Science",
+    color: "#0f766e",
+    bg: "#ecfeff",
+    text: "#0f766e",
+  },
+  MATDAIS: {
+    label: "Data Analysis & Information Systems",
+    color: "#9333ea",
+    bg: "#faf5ff",
+    text: "#7e22ce",
+  },
+  IEMIT: {
+    label: "IT Management",
+    color: "#b45309",
+    bg: "#fff7ed",
+    text: "#c2410c",
   },
   Elective: {
     label: "Elective",
@@ -42,7 +69,7 @@ export const GRADING_COMPONENT_COLORS = ["#2563eb", "#7c3aed", "#059669", "#d977
 export const COURSES: Course[] = [
   {
     id: 1,
-    dept: "AMI",
+    dept: "MATMIE",
     name: "Machine Learning",
     teachers: ["Dr. Aibek Nurlanov", "Ms. Dinara Seitkali"],
     credits: 5,
@@ -59,7 +86,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 2,
-    dept: "AMI",
+    dept: "MATMIE",
     name: "Algorithms & Data Structures",
     teachers: ["Prof. Ruslan Bekov"],
     credits: 4,
@@ -76,7 +103,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 3,
-    dept: "CIF",
+    dept: "COMFCI",
     name: "Digital Design",
     teachers: ["Ms. Kamila Asanova", "Mr. Timur Zhaksybekov"],
     credits: 4,
@@ -93,7 +120,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 4,
-    dept: "CIF",
+    dept: "COMFCI",
     name: "Media Production",
     teachers: ["Dr. Aizat Beisembayeva"],
     credits: 3,
@@ -110,7 +137,7 @@ export const COURSES: Course[] = [
   },
   {
     id: 5,
-    dept: "CEH",
+    dept: "COMCEH",
     name: "Network Security",
     teachers: ["Mr. Erlan Dzhaksybekov"],
     credits: 5,

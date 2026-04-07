@@ -101,23 +101,23 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             {course.credits} credits · {course.type}
           </p>
 
-          <p
+          <div
             className={cn(
-              "mt-4 text-base leading-[1.7] text-[var(--uaip-gray-700)] transition-all duration-200",
-              isHeaderCondensed && "overflow-hidden",
+              "relative mt-4 overflow-hidden transition-[max-height] duration-300 ease-out",
+              isHeaderCondensed ? "max-h-[3.4rem]" : "max-h-[10rem]",
             )}
-            style={
-              isHeaderCondensed
-                ? {
-                    display: "-webkit-box",
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: "vertical",
-                  }
-                : undefined
-            }
           >
-            {course.description}
-          </p>
+            <p className="text-base leading-[1.7] text-[var(--uaip-gray-700)]">
+              {course.description}
+            </p>
+            <div
+              aria-hidden="true"
+              className={cn(
+                "pointer-events-none absolute bottom-0 right-0 h-[1.7em] w-[58%] bg-gradient-to-r from-transparent via-white/88 to-white transition-opacity duration-300",
+                isHeaderCondensed ? "opacity-100" : "opacity-0",
+              )}
+            />
+          </div>
         </div>
 
         <div className="relative min-h-0 flex-1">
