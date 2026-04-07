@@ -72,7 +72,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="flex max-h-[85vh] w-full max-w-[560px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+        className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[18px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
       >
         <div className="shrink-0 border-b border-[var(--uaip-gray-100)] bg-white px-6 py-7 md:px-9 md:py-8">
           <div className="mb-5 flex items-center justify-between gap-4">
