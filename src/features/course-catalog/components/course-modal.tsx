@@ -19,8 +19,11 @@ function getTeacherInitial(teacher: string) {
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const descriptionWrapRef = useRef<HTMLDivElement | null>(null);
+  const descriptionTextRef = useRef<HTMLParagraphElement | null>(null);
   const [fadeOpacity, setFadeOpacity] = useState({ top: 0, bottom: 0 });
   const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
+  const [descriptionHeights, setDescriptionHeights] = useState({ expanded: 0, condensed: 0 });
 
   useEffect(() => {
     if (!course) {
@@ -28,10 +31,24 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     }
 
     const element = scrollRef.current;
+    const descriptionWrap = descriptionWrapRef.current;
+    const descriptionText = descriptionTextRef.current;
 
-    if (!element) {
+    if (!element || !descriptionWrap || !descriptionText) {
       return;
     }
+
+    const measureDescription = () => {
+      const computedStyle = window.getComputedStyle(descriptionText);
+      const lineHeight = Number.parseFloat(computedStyle.lineHeight) || 0;
+      const expanded = descriptionText.scrollHeight;
+      const condensed = lineHeight > 0 ? lineHeight * 2 : expanded;
+
+      setDescriptionHeights({
+        expanded,
+        condensed: Math.min(expanded, condensed),
+      });
+    };
 
     const updateFadeState = () => {
       const overflowDistance = element.scrollHeight - element.clientHeight;
@@ -51,13 +68,16 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     };
 
     element.scrollTop = 0;
+    measureDescription();
     updateFadeState();
 
     element.addEventListener("scroll", updateFadeState, { passive: true });
+    window.addEventListener("resize", measureDescription);
     window.addEventListener("resize", updateFadeState);
 
     return () => {
       element.removeEventListener("scroll", updateFadeState);
+      window.removeEventListener("resize", measureDescription);
       window.removeEventListener("resize", updateFadeState);
     };
   }, [course]);
@@ -108,12 +128,16 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
           </p>
 
           <div
-            className={cn(
-              "relative mt-4 overflow-hidden transition-[max-height] duration-300 ease-linear",
-              isHeaderCondensed ? "max-h-[3.4rem]" : "max-h-[10rem]",
-            )}
+            ref={descriptionWrapRef}
+            className="relative mt-4 overflow-hidden transition-[height] duration-300 ease-linear"
+            style={{
+              height:
+                descriptionHeights.expanded > 0
+                  ? `${isHeaderCondensed ? descriptionHeights.condensed : descriptionHeights.expanded}px`
+                  : undefined,
+            }}
           >
-            <p className="text-base leading-[1.7] text-[var(--uaip-gray-700)]">
+            <p ref={descriptionTextRef} className="text-base leading-[1.7] text-[var(--uaip-gray-700)]">
               {course.description}
             </p>
             <div
