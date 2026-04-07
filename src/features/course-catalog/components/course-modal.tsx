@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
+import { cn } from "@/lib/utils";
+
 import { DEPT_META, GRADE_SCALE, GRADING_COMPONENT_COLORS } from "../data";
 import type { Course } from "../types";
 
@@ -16,7 +18,9 @@ function getTeacherInitial(teacher: string) {
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [showTopFade, setShowTopFade] = useState(false);
   const [showBottomFade, setShowBottomFade] = useState(false);
+  const [isHeaderCondensed, setIsHeaderCondensed] = useState(false);
 
   useEffect(() => {
     if (!course) {
@@ -31,12 +35,16 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
     const updateFadeState = () => {
       const hasOverflow = element.scrollHeight - element.clientHeight > 4;
+      const isScrolled = element.scrollTop > 10;
 
+      setIsHeaderCondensed(isScrolled);
+      setShowTopFade(hasOverflow && element.scrollTop > 2);
       setShowBottomFade(
         hasOverflow && element.scrollTop + element.clientHeight < element.scrollHeight - 2,
       );
     };
 
+    element.scrollTop = 0;
     updateFadeState();
 
     element.addEventListener("scroll", updateFadeState, { passive: true });
@@ -62,12 +70,12 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
       onClick={onClose}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 md:p-6"
     >
-      <div onClick={(event) => event.stopPropagation()} className="relative w-full max-w-[560px]">
-        <div
-          ref={scrollRef}
-          className="uaip-modal-scroll max-h-[85vh] overflow-y-auto rounded-[18px] bg-white px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-9 md:py-8"
-        >
-          <div className="mb-5 flex items-center justify-between">
+      <div
+        onClick={(event) => event.stopPropagation()}
+        className="flex max-h-[85vh] w-full max-w-[560px] flex-col overflow-hidden rounded-[18px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+      >
+        <div className="shrink-0 border-b border-[var(--uaip-gray-100)] bg-white px-6 py-7 md:px-9 md:py-8">
+          <div className="mb-5 flex items-center justify-between gap-4">
             <span
               className="rounded-full px-2.5 py-1 text-[0.6875rem] font-bold tracking-[0.04em]"
               style={{ backgroundColor: dept.bg, color: dept.text }}
@@ -93,101 +101,127 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             {course.credits} credits · {course.type}
           </p>
 
-          <p className="mt-4 text-base leading-[1.7] text-[var(--uaip-gray-700)]">
+          <p
+            className={cn(
+              "mt-4 text-base leading-[1.7] text-[var(--uaip-gray-700)] transition-all duration-200",
+              isHeaderCondensed && "overflow-hidden",
+            )}
+            style={
+              isHeaderCondensed
+                ? {
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                  }
+                : undefined
+            }
+          >
             {course.description}
           </p>
+        </div>
 
-          <section className="mt-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
-              Teachers
-            </h3>
-            <div className="mt-2.5 space-y-0.5">
-              {course.teachers.map((teacher) => (
-                <div
-                  key={teacher}
-                  className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5 text-[0.9375rem] text-[var(--uaip-text-primary)]"
-                >
-                  <span
-                    className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
-                    style={{ backgroundColor: dept.bg, color: dept.text }}
-                  >
-                    {getTeacherInitial(teacher)}
-                  </span>
-                  {teacher}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="mt-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
-              Grading breakdown
-            </h3>
-
-            <div className="mt-2.5 space-y-0.5">
-              {course.components.map((component, index) => {
-                const chipColor = GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length];
-
-                return (
+        <div className="relative min-h-0 flex-1">
+          <div
+            ref={scrollRef}
+            className="uaip-modal-scroll h-full overflow-y-auto px-6 pb-7 pt-6 md:px-9 md:pb-8"
+          >
+            <section>
+              <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
+                Teachers
+              </h3>
+              <div className="mt-2.5 space-y-0.5">
+                {course.teachers.map((teacher) => (
                   <div
-                    key={component.name}
-                    className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5"
+                    key={teacher}
+                    className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5 text-[0.9375rem] text-[var(--uaip-text-primary)]"
                   >
                     <span
-                      className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
-                      style={{ color: chipColor, backgroundColor: `${chipColor}20` }}
+                      className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
+                      style={{ backgroundColor: dept.bg, color: dept.text }}
                     >
-                      {component.weight}%
+                      {getTeacherInitial(teacher)}
                     </span>
-                    <span className="text-[0.9375rem] text-[var(--uaip-gray-700)]">
-                      {component.name}
-                    </span>
+                    {teacher}
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
+            </section>
 
-            <div className="mt-3.5 rounded-[10px] bg-[var(--uaip-gray-50)] p-3">
-              <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
-                Standard grading scale
-              </h4>
+            <section className="mt-6">
+              <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
+                Grading breakdown
+              </h3>
 
-              <div className="flex flex-wrap gap-2">
-                {GRADE_SCALE.map((item) => (
+              <div className="mt-2.5 space-y-0.5">
+                {course.components.map((component, index) => {
+                  const chipColor =
+                    GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length];
+
+                  return (
+                    <div
+                      key={component.name}
+                      className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5"
+                    >
+                      <span
+                        className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
+                        style={{ color: chipColor, backgroundColor: `${chipColor}20` }}
+                      >
+                        {component.weight}%
+                      </span>
+                      <span className="text-[0.9375rem] text-[var(--uaip-gray-700)]">
+                        {component.name}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-3.5 rounded-[10px] bg-[var(--uaip-gray-50)] p-3">
+                <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
+                  Standard grading scale
+                </h4>
+
+                <div className="flex flex-wrap gap-2">
+                  {GRADE_SCALE.map((item) => (
+                    <span
+                      key={item.grade}
+                      className="rounded-full px-2.5 py-1 text-xs font-bold"
+                      style={{ color: item.color, backgroundColor: `${item.color}20` }}
+                    >
+                      {item.grade} · {item.range}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </section>
+
+            <section className="mt-6">
+              <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
+                Skills you&apos;ll gain
+              </h3>
+
+              <div className="mt-2.5 flex flex-wrap gap-2">
+                {course.outcomes.map((outcome) => (
                   <span
-                    key={item.grade}
-                    className="rounded-full px-2.5 py-1 text-xs font-bold"
-                    style={{ color: item.color, backgroundColor: `${item.color}20` }}
+                    key={outcome}
+                    className="rounded-full bg-[var(--uaip-gray-100)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
                   >
-                    {item.grade} · {item.range}
+                    {outcome}
                   </span>
                 ))}
               </div>
-            </div>
-          </section>
+            </section>
+          </div>
 
-          <section className="mt-6">
-            <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
-              Skills you&apos;ll gain
-            </h3>
-
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {course.outcomes.map((outcome) => (
-                <span
-                  key={outcome}
-                  className="rounded-full bg-[var(--uaip-gray-100)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
-                >
-                  {outcome}
-                </span>
-              ))}
-            </div>
-          </section>
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 top-0 h-[68px] bg-gradient-to-b from-white via-white/92 to-transparent transition-opacity duration-200 ${showTopFade ? "opacity-100" : "opacity-0"}`}
+          />
+          <div
+            aria-hidden
+            className={`pointer-events-none absolute inset-x-0 bottom-0 h-[96px] bg-gradient-to-t from-white via-white/94 to-transparent transition-opacity duration-200 ${showBottomFade ? "opacity-100" : "opacity-0"}`}
+          />
         </div>
-
-        <div
-          aria-hidden
-          className={`pointer-events-none absolute inset-x-0 bottom-0 h-[84px] rounded-b-[18px] bg-gradient-to-t from-white to-transparent transition-opacity duration-200 ${showBottomFade ? "opacity-100" : "opacity-0"}`}
-        />
       </div>
     </div>
   );
