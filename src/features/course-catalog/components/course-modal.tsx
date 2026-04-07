@@ -109,7 +109,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
           <div
             className={cn(
-              "relative mt-4 overflow-hidden transition-[max-height] duration-300 ease-out",
+              "relative mt-4 overflow-hidden transition-[max-height] duration-300 ease-linear",
               isHeaderCondensed ? "max-h-[3.4rem]" : "max-h-[10rem]",
             )}
           >
