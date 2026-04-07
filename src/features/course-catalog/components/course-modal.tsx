@@ -29,7 +29,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="max-h-[85vh] w-full max-w-[560px] overflow-y-auto rounded-[18px] bg-white px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-9 md:py-8"
+        className="uaip-modal-scroll max-h-[85vh] w-full max-w-[560px] overflow-y-auto rounded-[18px] bg-white px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-9 md:py-8"
       >
         <div className="mb-5 flex items-center justify-between">
           <span
