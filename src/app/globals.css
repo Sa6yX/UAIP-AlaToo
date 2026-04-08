@@ -76,6 +76,15 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+.uaip-filter-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.uaip-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .font-heading {
-  font-family: var(--font-sora), var(--font-dm-sans), system-ui, sans-serif;
+  font-family: var(--font-plus-jakarta-sans), var(--font-dm-sans), system-ui, sans-serif;
 }

@@ -1,17 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { COURSES, DEPARTMENTS, GRADE_SCALE } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
+import { ElectivesHintModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter } from "./types";
 
+const ELECTIVES_HINT_STORAGE_KEY = "uaip-electives-hint-dismissed";
+
 export function CourseCatalog() {
+  const filterScrollRef = useRef<HTMLDivElement | null>(null);
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
+  const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
+  const [neverShowElectivesHint, setNeverShowElectivesHint] = useState(false);
+  const [electivesHintDismissed, setElectivesHintDismissed] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(ELECTIVES_HINT_STORAGE_KEY) === "1",
+  );
+  const [filterFadeOpacity, setFilterFadeOpacity] = useState({ left: 0, right: 0 });
   const [pageBottomFadeOpacity, setPageBottomFadeOpacity] = useState(0);
 
   useEffect(() => {
@@ -43,6 +56,39 @@ export function CourseCatalog() {
       window.removeEventListener("keydown", onEscape);
     };
   }, [selectedCourse]);
+
+  useEffect(() => {
+    const element = filterScrollRef.current;
+
+    if (!element) {
+      return;
+    }
+
+    const updateFilterFadeState = () => {
+      const scrollableDistance = Math.max(element.scrollWidth - element.clientWidth, 0);
+      const canScroll = scrollableDistance > 4;
+      const remainingRightDistance = Math.max(scrollableDistance - element.scrollLeft, 0);
+
+      setFilterFadeOpacity(
+        canScroll
+          ? {
+              left: getEdgeFadeOpacity(element.scrollLeft, 72),
+              right: getEdgeFadeOpacity(remainingRightDistance, 72),
+            }
+          : { left: 0, right: 0 },
+      );
+    };
+
+    updateFilterFadeState();
+
+    element.addEventListener("scroll", updateFilterFadeState, { passive: true });
+    window.addEventListener("resize", updateFilterFadeState);
+
+    return () => {
+      element.removeEventListener("scroll", updateFilterFadeState);
+      window.removeEventListener("resize", updateFilterFadeState);
+    };
+  }, []);
 
   useEffect(() => {
     const updatePageFadeState = () => {
@@ -92,6 +138,51 @@ export function CourseCatalog() {
     [],
   );
 
+  const openElectivesHintModal = (nextCourse: Course | null = null) => {
+    if (electivesHintDismissed) {
+      if (nextCourse) {
+        setSelectedCourse(nextCourse);
+      }
+
+      return;
+    }
+
+    setPendingCourse(nextCourse);
+    setNeverShowElectivesHint(false);
+    setShowElectivesHintModal(true);
+  };
+
+  const handleElectivesHintClose = () => {
+    if (neverShowElectivesHint && typeof window !== "undefined") {
+      window.localStorage.setItem(ELECTIVES_HINT_STORAGE_KEY, "1");
+      setElectivesHintDismissed(true);
+    }
+
+    setShowElectivesHintModal(false);
+
+    if (pendingCourse) {
+      setSelectedCourse(pendingCourse);
+      setPendingCourse(null);
+    }
+  };
+
+  const handleDepartmentSelect = (department: DepartmentFilter) => {
+    setActiveDept(department);
+
+    if (department === "Electives") {
+      openElectivesHintModal();
+    }
+  };
+
+  const handleCourseSelect = (course: Course) => {
+    if (activeDept === "All" && course.dept === "Elective") {
+      openElectivesHintModal(course);
+      return;
+    }
+
+    setSelectedCourse(course);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
       <div
@@ -120,55 +211,66 @@ export function CourseCatalog() {
       </header>
 
       <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
-        <section className="mb-7 flex flex-wrap items-center gap-3">
+        <section className="mb-7">
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
             placeholder="Search courses or teachers…"
-            className="h-11 min-w-[210px] flex-1 rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-base text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
+            className="h-11 w-full rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-base text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
           />
 
-          <div className="flex flex-wrap gap-1.5">
-            {DEPARTMENTS.map((department) => {
-              const isActive = activeDept === department;
+          <div className="relative mt-3">
+            <div
+              ref={filterScrollRef}
+              className="uaip-filter-scroll flex gap-1.5 overflow-x-auto pb-1"
+            >
+              {DEPARTMENTS.map((department) => {
+                const isActive = activeDept === department;
 
-              return (
-                <button
-                  key={department}
-                  type="button"
-                  onClick={() => setActiveDept(department)}
-                  className="rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
-                  style={{
-                    border: isActive
-                      ? "1.5px solid transparent"
-                      : "1.5px solid var(--uaip-gray-200)",
-                    background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
-                    color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
-                  }}
-                >
-                  {department}
-                </button>
-              );
-            })}
+                return (
+                  <button
+                    key={department}
+                    type="button"
+                    onClick={() => handleDepartmentSelect(department)}
+                    className="shrink-0 rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
+                    style={{
+                      border: isActive
+                        ? "1.5px solid transparent"
+                        : "1.5px solid var(--uaip-gray-200)",
+                      background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
+                      color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
+                    }}
+                  >
+                    {department}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 left-0 transition-opacity duration-150"
+              style={{
+                opacity: filterFadeOpacity.left,
+                width: "25%",
+                maxWidth: "132px",
+                background:
+                  "linear-gradient(to right, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
+              }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 right-0 transition-opacity duration-150"
+              style={{
+                opacity: filterFadeOpacity.right,
+                width: "25%",
+                maxWidth: "132px",
+                background:
+                  "linear-gradient(to left, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
+              }}
+            />
           </div>
         </section>
-
-        {(activeDept === "All" || activeDept === "Electives") && (
-          <section className="mb-6 flex items-start gap-3 rounded-xl border border-[#fde68a] bg-[#fffbeb] px-4 py-3.5">
-            <span className="text-lg" aria-hidden>
-              💡
-            </span>
-            <div>
-              <h2 className="font-heading text-[clamp(1.03rem,1rem+0.16vw,1.1rem)] font-bold text-[#92400e]">
-                About electives
-              </h2>
-              <p className="mt-0.5 text-base leading-relaxed text-[#b45309]">
-                Electives are open to all departments. You choose one from the full list each
-                semester. Review the grading breakdown and learning outcomes before choosing.
-              </p>
-            </div>
-          </section>
-        )}
 
         <section className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-[linear-gradient(135deg,#1e3a5f_0%,#2563eb_100%)] px-5 py-4">
           <div>
@@ -198,7 +300,7 @@ export function CourseCatalog() {
         {filteredCourses.length > 0 ? (
           <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} onSelect={setSelectedCourse} />
+              <CourseCard key={course.id} course={course} onSelect={handleCourseSelect} />
             ))}
           </section>
         ) : (
@@ -212,6 +314,12 @@ export function CourseCatalog() {
         )}
       </div>
 
+      <ElectivesHintModal
+        isOpen={showElectivesHintModal}
+        neverShowAgain={neverShowElectivesHint}
+        onNeverShowAgainChange={setNeverShowElectivesHint}
+        onClose={handleElectivesHintClose}
+      />
       <CourseModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />
     </div>
   );

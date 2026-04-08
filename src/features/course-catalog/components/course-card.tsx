@@ -67,7 +67,7 @@ export function CourseCard({ course, onSelect }: CourseCardProps) {
               event.stopPropagation();
               handleOpen();
             }}
-            className="inline-flex items-center gap-1 rounded-full border border-[var(--uaip-gray-200)] bg-white px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-text-primary)] transition hover:border-[var(--uaip-gray-300)] hover:bg-[var(--uaip-gray-50)]"
+            className="inline-flex items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
           >
             OCS
             <ArrowUpRightIcon />
@@ -96,7 +96,7 @@ export function CourseCard({ course, onSelect }: CourseCardProps) {
         </p>
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[55%] bg-gradient-to-r from-transparent via-white/88 to-white"
+          className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-white/88 to-white"
         />
       </div>
 
