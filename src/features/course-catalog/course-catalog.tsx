@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { COURSES, DEPARTMENTS, GRADE_SCALE } from "./data";
+import { COURSES, DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
 import { InfoModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
-import type { Course, DepartmentFilter } from "./types";
+import type { Course, DepartmentFilter, StudyGrade } from "./types";
 
 const ELECTIVES_HINT_STORAGE_KEY = "uaip-electives-hint-dismissed";
 const ELECTIVES_HINT_TEXT =
@@ -17,6 +17,7 @@ const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 export function CourseCatalog() {
   const filterScrollRef = useRef<HTMLDivElement | null>(null);
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
+  const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
@@ -148,9 +149,11 @@ export function CourseCatalog() {
         course.name.toLowerCase().includes(normalizedSearch) ||
         course.teachers.some((teacher) => teacher.toLowerCase().includes(normalizedSearch));
 
-      return matchDepartment && matchSearch;
+      const matchGrade = activeGrade.length === 0 || course.grade === activeGrade;
+
+      return matchDepartment && matchSearch && matchGrade;
     });
-  }, [activeDept, search]);
+  }, [activeDept, activeGrade, search]);
 
   const openElectivesHintModal = (nextCourse: Course | null = null) => {
     if (electivesHintDismissed) {
@@ -201,6 +204,21 @@ export function CourseCatalog() {
     setShowOcsSoonModal(true);
   };
 
+  const handleGradeInputChange = (value: string) => {
+    const normalizedValue = value.trim();
+
+    if (normalizedValue.length === 0) {
+      setActiveGrade("");
+      return;
+    }
+
+    const matchedGrade = STUDY_GRADES.find(
+      (grade) => grade.toLowerCase() === normalizedValue.toLowerCase(),
+    );
+
+    setActiveGrade(matchedGrade ?? "");
+  };
+
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
       <div
@@ -230,56 +248,73 @@ export function CourseCatalog() {
             className="h-11 w-full rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-base text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
           />
 
-          <div className="relative mt-3">
-            <div
-              ref={filterScrollRef}
-              className="uaip-filter-scroll flex gap-1.5 overflow-x-auto pb-1"
-            >
-              {DEPARTMENTS.map((department) => {
-                const isActive = activeDept === department;
-
-                return (
-                  <button
-                    key={department}
-                    type="button"
-                    onClick={() => handleDepartmentSelect(department)}
-                    className="shrink-0 rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
-                    style={{
-                      border: isActive
-                        ? "1.5px solid transparent"
-                        : "1.5px solid var(--uaip-gray-200)",
-                      background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
-                      color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
-                    }}
-                  >
-                    {department}
-                  </button>
-                );
-              })}
+          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-start">
+            <div className="md:w-[220px] md:min-w-[220px] md:shrink-0">
+              <input
+                list="uaip-study-grades"
+                value={activeGrade}
+                onChange={(event) => handleGradeInputChange(event.target.value)}
+                placeholder="All grades"
+                className="h-11 w-full rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-[0.9375rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
+              />
+              <datalist id="uaip-study-grades">
+                {STUDY_GRADES.map((grade) => (
+                  <option key={grade} value={grade} />
+                ))}
+              </datalist>
             </div>
 
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 left-0 transition-opacity duration-150"
-              style={{
-                opacity: filterFadeOpacity.left,
-                width: "15%",
-                maxWidth: "84px",
-                background:
-                  "linear-gradient(to right, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
-              }}
-            />
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 transition-opacity duration-150"
-              style={{
-                opacity: filterFadeOpacity.right,
-                width: "15%",
-                maxWidth: "84px",
-                background:
-                  "linear-gradient(to left, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
-              }}
-            />
+            <div className="relative min-w-0 flex-1">
+              <div
+                ref={filterScrollRef}
+                className="uaip-filter-scroll flex gap-1.5 overflow-x-auto pb-1"
+              >
+                {DEPARTMENTS.map((department) => {
+                  const isActive = activeDept === department;
+
+                  return (
+                    <button
+                      key={department}
+                      type="button"
+                      onClick={() => handleDepartmentSelect(department)}
+                      className="shrink-0 rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
+                      style={{
+                        border: isActive
+                          ? "1.5px solid transparent"
+                          : "1.5px solid var(--uaip-gray-200)",
+                        background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
+                        color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
+                      }}
+                    >
+                      {department}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 left-0 transition-opacity duration-150"
+                style={{
+                  opacity: filterFadeOpacity.left,
+                  width: "15%",
+                  maxWidth: "84px",
+                  background:
+                    "linear-gradient(to right, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 right-0 transition-opacity duration-150"
+                style={{
+                  opacity: filterFadeOpacity.right,
+                  width: "15%",
+                  maxWidth: "84px",
+                  background:
+                    "linear-gradient(to left, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
+                }}
+              />
+            </div>
           </div>
         </section>
 
