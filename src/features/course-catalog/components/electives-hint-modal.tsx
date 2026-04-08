@@ -1,19 +1,24 @@
-type ElectivesHintModalProps = {
+type InfoModalProps = {
   isOpen: boolean;
-  neverShowAgain: boolean;
-  onNeverShowAgainChange: (checked: boolean) => void;
+  title: string;
+  description: string;
+  showNeverShowAgain?: boolean;
+  neverShowAgain?: boolean;
+  onNeverShowAgainChange?: (checked: boolean) => void;
+  actionLabel?: string;
   onClose: () => void;
 };
 
-const ELECTIVES_HINT_TEXT =
-  "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
-
-export function ElectivesHintModal({
+export function InfoModal({
   isOpen,
-  neverShowAgain,
+  title,
+  description,
+  showNeverShowAgain = false,
+  neverShowAgain = false,
   onNeverShowAgainChange,
+  actionLabel = "OK, understood",
   onClose,
-}: ElectivesHintModalProps) {
+}: InfoModalProps) {
   if (!isOpen) {
     return null;
   }
@@ -36,30 +41,32 @@ export function ElectivesHintModal({
           </span>
           <div>
             <h2 className="font-heading text-[clamp(1.04rem,1rem+0.2vw,1.14rem)] font-bold text-[var(--uaip-text-primary)]">
-              About electives
+              {title}
             </h2>
             <p className="mt-2 text-[0.95rem] leading-relaxed text-[var(--uaip-gray-700)]">
-              {ELECTIVES_HINT_TEXT}
+              {description}
             </p>
           </div>
         </div>
 
-        <label className="mt-5 flex items-center gap-2.5 text-sm font-medium text-[var(--uaip-gray-600)]">
-          <input
-            type="checkbox"
-            checked={neverShowAgain}
-            onChange={(event) => onNeverShowAgainChange(event.target.checked)}
-            className="size-4 rounded border border-[var(--uaip-gray-300)] accent-[var(--uaip-blue)]"
-          />
-          Never show again
-        </label>
+        {showNeverShowAgain ? (
+          <label className="mt-5 flex items-center gap-2.5 text-sm font-medium text-[var(--uaip-gray-600)]">
+            <input
+              type="checkbox"
+              checked={neverShowAgain}
+              onChange={(event) => onNeverShowAgainChange?.(event.target.checked)}
+              className="size-4 rounded border border-[var(--uaip-gray-300)] accent-[var(--uaip-blue)]"
+            />
+            Never show again
+          </label>
+        ) : null}
 
         <button
           type="button"
           onClick={onClose}
           className="mt-3 inline-flex w-full items-center justify-center rounded-[12px] bg-[var(--uaip-blue)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1d4ed8]"
         >
-          OK, understood
+          {actionLabel}
         </button>
       </div>
     </div>

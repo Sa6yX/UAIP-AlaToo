@@ -8,6 +8,7 @@ import { GradingBar } from "./grading-bar";
 type CourseCardProps = {
   course: Course;
   onSelect: (course: Course) => void;
+  onOcsClick: (course: Course) => void;
 };
 
 function ArrowUpRightIcon() {
@@ -28,7 +29,7 @@ function ArrowUpRightIcon() {
   );
 }
 
-export function CourseCard({ course, onSelect }: CourseCardProps) {
+export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
   const dept = DEPT_META[course.dept];
   const hasMultipleTeachers = course.teachers.length > 1;
 
@@ -65,7 +66,7 @@ export function CourseCard({ course, onSelect }: CourseCardProps) {
             type="button"
             onClick={(event) => {
               event.stopPropagation();
-              handleOpen();
+              onOcsClick(course);
             }}
             className="inline-flex items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
           >

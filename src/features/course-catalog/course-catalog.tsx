@@ -5,11 +5,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { COURSES, DEPARTMENTS, GRADE_SCALE } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
-import { ElectivesHintModal } from "./components/electives-hint-modal";
+import { InfoModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter } from "./types";
 
 const ELECTIVES_HINT_STORAGE_KEY = "uaip-electives-hint-dismissed";
+const ELECTIVES_HINT_TEXT =
+  "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
+const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 
 export function CourseCatalog() {
   const filterScrollRef = useRef<HTMLDivElement | null>(null);
@@ -18,6 +21,7 @@ export function CourseCatalog() {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
+  const [showOcsSoonModal, setShowOcsSoonModal] = useState(false);
   const [neverShowElectivesHint, setNeverShowElectivesHint] = useState(false);
   const [electivesHintDismissed, setElectivesHintDismissed] = useState(
     () =>
@@ -28,13 +32,28 @@ export function CourseCatalog() {
   const [pageBottomFadeOpacity, setPageBottomFadeOpacity] = useState(0);
 
   useEffect(() => {
-    if (!selectedCourse) {
+    const hasOpenOverlay = Boolean(selectedCourse || showElectivesHintModal || showOcsSoonModal);
+
+    if (!hasOpenOverlay) {
       return;
     }
 
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedCourse(null);
+        if (selectedCourse) {
+          setSelectedCourse(null);
+          return;
+        }
+
+        if (showOcsSoonModal) {
+          setShowOcsSoonModal(false);
+          return;
+        }
+
+        if (showElectivesHintModal) {
+          setShowElectivesHintModal(false);
+          setPendingCourse(null);
+        }
       }
     };
 
@@ -55,7 +74,7 @@ export function CourseCatalog() {
       document.body.style.paddingRight = previousPaddingRight;
       window.removeEventListener("keydown", onEscape);
     };
-  }, [selectedCourse]);
+  }, [selectedCourse, showElectivesHintModal, showOcsSoonModal]);
 
   useEffect(() => {
     const element = filterScrollRef.current;
@@ -133,11 +152,6 @@ export function CourseCatalog() {
     });
   }, [activeDept, search]);
 
-  const electiveCount = useMemo(
-    () => COURSES.filter((course) => course.dept === "Elective").length,
-    [],
-  );
-
   const openElectivesHintModal = (nextCourse: Course | null = null) => {
     if (electivesHintDismissed) {
       if (nextCourse) {
@@ -183,6 +197,10 @@ export function CourseCatalog() {
     setSelectedCourse(course);
   };
 
+  const handleOcsClick = () => {
+    setShowOcsSoonModal(true);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
       <div
@@ -191,21 +209,14 @@ export function CourseCatalog() {
         style={{ opacity: pageBottomFadeOpacity }}
       />
       <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-start justify-between gap-3">
+        <div className="mx-auto w-full max-w-[1200px]">
           <div>
             <p className="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--uaip-gray-400)]">
-              Ala-Too International University
+              ALA-TOO INTERNATIONAL UNIVERSITY / UAIP
             </p>
-            <h1 className="font-heading mt-0.5 text-[clamp(1.4rem,1.29rem+0.56vw,1.75rem)] font-extrabold text-[var(--uaip-text-primary)]">
+            <h1 className="mt-1 text-[0.92rem] font-bold tracking-[0.12em] text-[var(--uaip-gray-500)] md:text-[1rem]">
               Course Catalog
             </h1>
-          </div>
-
-          <div className="text-right text-xs text-[var(--uaip-gray-400)]">
-            <p className="font-semibold text-[var(--uaip-gray-500)]">
-              {COURSES.length} courses · {electiveCount} electives
-            </p>
-            <p>No login required</p>
           </div>
         </div>
       </header>
@@ -292,15 +303,15 @@ export function CourseCatalog() {
           </div>
         </section>
 
-        <p className="mb-4 text-[0.8125rem] text-[var(--uaip-gray-400)]">
-          {filteredCourses.length} course{filteredCourses.length === 1 ? "" : "s"}
-          {search ? ` matching "${search}"` : ""}
-        </p>
-
         {filteredCourses.length > 0 ? (
           <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} onSelect={handleCourseSelect} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                onSelect={handleCourseSelect}
+                onOcsClick={handleOcsClick}
+              />
             ))}
           </section>
         ) : (
@@ -314,11 +325,20 @@ export function CourseCatalog() {
         )}
       </div>
 
-      <ElectivesHintModal
+      <InfoModal
         isOpen={showElectivesHintModal}
+        title="About electives"
+        description={ELECTIVES_HINT_TEXT}
+        showNeverShowAgain
         neverShowAgain={neverShowElectivesHint}
         onNeverShowAgainChange={setNeverShowElectivesHint}
         onClose={handleElectivesHintClose}
+      />
+      <InfoModal
+        isOpen={showOcsSoonModal}
+        title="OCS"
+        description={OCS_COMING_SOON_TEXT}
+        onClose={() => setShowOcsSoonModal(false)}
       />
       <CourseModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />
     </div>
