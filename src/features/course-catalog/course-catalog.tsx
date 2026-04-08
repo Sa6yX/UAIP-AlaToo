@@ -252,8 +252,8 @@ export function CourseCatalog() {
               className="pointer-events-none absolute inset-y-0 left-0 transition-opacity duration-150"
               style={{
                 opacity: filterFadeOpacity.left,
-                width: "25%",
-                maxWidth: "132px",
+                width: "15%",
+                maxWidth: "84px",
                 background:
                   "linear-gradient(to right, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
               }}
@@ -263,8 +263,8 @@ export function CourseCatalog() {
               className="pointer-events-none absolute inset-y-0 right-0 transition-opacity duration-150"
               style={{
                 opacity: filterFadeOpacity.right,
-                width: "25%",
-                maxWidth: "132px",
+                width: "15%",
+                maxWidth: "84px",
                 background:
                   "linear-gradient(to left, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
               }}
