@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { COURSES, DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
+import { GradeSelect } from "./components/grade-select";
 import { InfoModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter, StudyGrade } from "./types";
@@ -204,21 +205,6 @@ export function CourseCatalog() {
     setShowOcsSoonModal(true);
   };
 
-  const handleGradeInputChange = (value: string) => {
-    const normalizedValue = value.trim();
-
-    if (normalizedValue.length === 0) {
-      setActiveGrade("");
-      return;
-    }
-
-    const matchedGrade = STUDY_GRADES.find(
-      (grade) => grade.toLowerCase() === normalizedValue.toLowerCase(),
-    );
-
-    setActiveGrade(matchedGrade ?? "");
-  };
-
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
       <div
@@ -250,18 +236,7 @@ export function CourseCatalog() {
 
           <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-start">
             <div className="md:w-[220px] md:min-w-[220px] md:shrink-0">
-              <input
-                list="uaip-study-grades"
-                value={activeGrade}
-                onChange={(event) => handleGradeInputChange(event.target.value)}
-                placeholder="All grades"
-                className="h-11 w-full rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-[0.9375rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
-              />
-              <datalist id="uaip-study-grades">
-                {STUDY_GRADES.map((grade) => (
-                  <option key={grade} value={grade} />
-                ))}
-              </datalist>
+              <GradeSelect options={STUDY_GRADES} value={activeGrade} onChange={setActiveGrade} />
             </div>
 
             <div className="relative min-w-0 flex-1">
