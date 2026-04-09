@@ -49,6 +49,68 @@ function parseCourseComponents(value: Json | null | undefined): CourseComponent[
   });
 }
 
+function buildFallbackGradingComponents(row: CatalogCardRow): CourseComponent[] {
+  const courseName = (row.course_name ?? "").toLowerCase();
+  const theoryHours = row.theory_hours ?? 0;
+  const practiceRaw = row.practice_hours_raw ?? "0+0";
+  const practiceHours = practiceRaw
+    .split("+")
+    .map((value) => Number.parseInt(value, 10))
+    .filter((value) => Number.isFinite(value))
+    .reduce((sum, value) => sum + value, 0);
+
+  if (courseName.includes("internship")) {
+    return [
+      { name: "Practice performance", weight: 35 },
+      { name: "Supervisor evaluation", weight: 35 },
+      { name: "Final report", weight: 20 },
+      { name: "Presentation", weight: 10 },
+    ];
+  }
+
+  if (courseName.includes("course work") || courseName.includes("coursework")) {
+    return [
+      { name: "Project implementation", weight: 45 },
+      { name: "Written submission", weight: 25 },
+      { name: "Defense / viva", weight: 20 },
+      { name: "Milestones", weight: 10 },
+    ];
+  }
+
+  if (courseName.includes("examination")) {
+    return [
+      { name: "Mock assessment", weight: 20 },
+      { name: "Final examination", weight: 70 },
+      { name: "Participation", weight: 10 },
+    ];
+  }
+
+  if (Boolean(row.is_elective)) {
+    return [
+      { name: "Assignments", weight: 30 },
+      { name: "Project / presentation", weight: 30 },
+      { name: "Final exam", weight: 30 },
+      { name: "Participation", weight: 10 },
+    ];
+  }
+
+  if (practiceHours >= theoryHours && practiceHours > 0) {
+    return [
+      { name: "Practical assignments", weight: 35 },
+      { name: "Project work", weight: 30 },
+      { name: "Final assessment", weight: 25 },
+      { name: "Participation", weight: 10 },
+    ];
+  }
+
+  return [
+    { name: "Midterm exam", weight: 30 },
+    { name: "Final exam", weight: 35 },
+    { name: "Assignments", weight: 25 },
+    { name: "Participation", weight: 10 },
+  ];
+}
+
 function toStudyGradeLabel(value: number | null): StudyGrade {
   switch (value) {
     case 1:
@@ -125,7 +187,8 @@ export function mapCatalogCardToCourse(row: CatalogCardRow): Course {
   const departments = toDepartments(row.program_codes, isElective);
   const teachers = parseStringArray(row.teachers);
   const outcomes = parseStringArray(row.outcomes);
-  const components = parseCourseComponents(row.grading_components);
+  const parsedComponents = parseCourseComponents(row.grading_components);
+  const components = parsedComponents.length > 0 ? parsedComponents : buildFallbackGradingComponents(row);
 
   return {
     id: row.browse_id ?? row.course_id ?? crypto.randomUUID(),
