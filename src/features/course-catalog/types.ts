@@ -4,7 +4,7 @@ export type Department =
   | "COMCEH"
   | "COMSE"
   | "MATDAIS"
-  | "IEMIT"
+  | "EIMIT"
   | "Elective";
 
 export type DepartmentFilter =
@@ -14,7 +14,7 @@ export type DepartmentFilter =
   | "COMCEH"
   | "COMSE"
   | "MATDAIS"
-  | "IEMIT"
+  | "EIMIT"
   | "Electives";
 
 export type StudyGrade = "1st Grade" | "2nd Grade" | "3rd Grade" | "4th Grade";
@@ -25,8 +25,12 @@ export type CourseComponent = {
 };
 
 export type Course = {
-  id: number;
+  id: number | string;
+  offeringId?: string | null;
+  code?: string;
   dept: Department;
+  departments?: Department[];
+  isElective?: boolean;
   grade: StudyGrade;
   name: string;
   teachers: string[];
@@ -35,6 +39,8 @@ export type Course = {
   outcomes: string[];
   components: CourseComponent[];
   description: string;
+  semester?: number | null;
+  electiveGroupCode?: string | null;
 };
 
 export type GradeScaleItem = {

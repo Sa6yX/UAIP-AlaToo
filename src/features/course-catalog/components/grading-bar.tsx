@@ -6,6 +6,10 @@ type GradingBarProps = {
 };
 
 export function GradingBar({ components }: GradingBarProps) {
+  if (components.length === 0) {
+    return null;
+  }
+
   return (
     <div className="mt-3">
       <div className="flex h-1.5 gap-[2px] overflow-hidden rounded-sm">
