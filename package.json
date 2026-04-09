@@ -18,7 +18,8 @@
     "supabase:start": "supabase start",
     "supabase:stop": "supabase stop",
     "supabase:status": "supabase status",
-    "supabase:types": "supabase gen types typescript --local > src/types/database.ts"
+    "supabase:types": "supabase gen types typescript --linked --schema public > src/types/database.ts",
+    "curriculum:import": "node ./scripts/import-curriculum.mjs"
   },
   "dependencies": {
     "@heroui/react": "^3.0.2",
