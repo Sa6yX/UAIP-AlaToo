@@ -192,12 +192,12 @@ export function CourseCatalog() {
 
       <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
         <section className="mb-7">
-          <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.25fr)_220px_220px] md:items-start">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(0,1.25fr)_220px_220px] md:items-start">
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search courses or teachers…"
-              className="h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
+              className="col-span-2 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
             />
 
             <FilterSelect
