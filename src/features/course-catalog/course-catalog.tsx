@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { COURSES, DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
-import { GradeSelect } from "./components/grade-select";
+import { FilterSelect } from "./components/grade-select";
 import { InfoModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter, StudyGrade } from "./types";
@@ -16,7 +16,6 @@ const ELECTIVES_HINT_TEXT =
 const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 
 export function CourseCatalog() {
-  const filterScrollRef = useRef<HTMLDivElement | null>(null);
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
   const [search, setSearch] = useState("");
@@ -30,7 +29,6 @@ export function CourseCatalog() {
       typeof window !== "undefined" &&
       window.localStorage.getItem(ELECTIVES_HINT_STORAGE_KEY) === "1",
   );
-  const [filterFadeOpacity, setFilterFadeOpacity] = useState({ left: 0, right: 0 });
   const [pageBottomFadeOpacity, setPageBottomFadeOpacity] = useState(0);
 
   useEffect(() => {
@@ -77,39 +75,6 @@ export function CourseCatalog() {
       window.removeEventListener("keydown", onEscape);
     };
   }, [selectedCourse, showElectivesHintModal, showOcsSoonModal]);
-
-  useEffect(() => {
-    const element = filterScrollRef.current;
-
-    if (!element) {
-      return;
-    }
-
-    const updateFilterFadeState = () => {
-      const scrollableDistance = Math.max(element.scrollWidth - element.clientWidth, 0);
-      const canScroll = scrollableDistance > 4;
-      const remainingRightDistance = Math.max(scrollableDistance - element.scrollLeft, 0);
-
-      setFilterFadeOpacity(
-        canScroll
-          ? {
-              left: getEdgeFadeOpacity(element.scrollLeft, 72),
-              right: getEdgeFadeOpacity(remainingRightDistance, 72),
-            }
-          : { left: 0, right: 0 },
-      );
-    };
-
-    updateFilterFadeState();
-
-    element.addEventListener("scroll", updateFilterFadeState, { passive: true });
-    window.addEventListener("resize", updateFilterFadeState);
-
-    return () => {
-      element.removeEventListener("scroll", updateFilterFadeState);
-      window.removeEventListener("resize", updateFilterFadeState);
-    };
-  }, []);
 
   useEffect(() => {
     const updatePageFadeState = () => {
@@ -227,69 +192,29 @@ export function CourseCatalog() {
 
       <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
         <section className="mb-7">
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search courses or teachers…"
-            className="h-11 w-full rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-base text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
-          />
+          <div className="flex flex-col gap-3 md:grid md:grid-cols-[minmax(0,1.25fr)_220px_220px] md:items-start">
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search courses or teachers…"
+              className="h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
+            />
 
-          <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-start">
-            <div className="md:w-[220px] md:min-w-[220px] md:shrink-0">
-              <GradeSelect options={STUDY_GRADES} value={activeGrade} onChange={setActiveGrade} />
-            </div>
+            <FilterSelect
+              options={STUDY_GRADES}
+              value={activeGrade}
+              onChange={setActiveGrade}
+              placeholder="All grades"
+              allLabel="All grades"
+            />
 
-            <div className="relative min-w-0 flex-1">
-              <div
-                ref={filterScrollRef}
-                className="uaip-filter-scroll flex gap-1.5 overflow-x-auto pb-1"
-              >
-                {DEPARTMENTS.map((department) => {
-                  const isActive = activeDept === department;
-
-                  return (
-                    <button
-                      key={department}
-                      type="button"
-                      onClick={() => handleDepartmentSelect(department)}
-                      className="shrink-0 rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
-                      style={{
-                        border: isActive
-                          ? "1.5px solid transparent"
-                          : "1.5px solid var(--uaip-gray-200)",
-                        background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
-                        color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
-                      }}
-                    >
-                      {department}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 left-0 transition-opacity duration-150"
-                style={{
-                  opacity: filterFadeOpacity.left,
-                  width: "15%",
-                  maxWidth: "84px",
-                  background:
-                    "linear-gradient(to right, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
-                }}
-              />
-              <div
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 right-0 transition-opacity duration-150"
-                style={{
-                  opacity: filterFadeOpacity.right,
-                  width: "15%",
-                  maxWidth: "84px",
-                  background:
-                    "linear-gradient(to left, var(--uaip-bg) 0%, rgba(248, 249, 252, 0.92) 45%, transparent 100%)",
-                }}
-              />
-            </div>
+            <FilterSelect
+              options={DEPARTMENTS.filter((department) => department !== "All")}
+              value={activeDept === "All" ? "" : activeDept}
+              onChange={(value) => handleDepartmentSelect(value || "All")}
+              placeholder="All sections"
+              allLabel="All sections"
+            />
           </div>
         </section>
 
