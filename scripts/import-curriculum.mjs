@@ -36,6 +36,39 @@ const PROGRAM_META = {
     language: "EN",
     file: "COMSE.md",
   },
+  EIMIT: {
+    code: "EIMIT",
+    name: "Management in IT",
+    faculty: "IT Faculty",
+    degree: "Bachelor",
+    language: "EN",
+    file: "EIMIT.md",
+  },
+  MATDAIS: {
+    code: "MATDAIS",
+    name: "Data Science and Intellectual Systems",
+    faculty: "IT Faculty",
+    degree: "Bachelor",
+    language: "EN",
+    file: "MATDAIS.md",
+  },
+  MATMIE: {
+    code: "MATMIE",
+    name: "Applied Mathematics & Informatics in Education",
+    faculty: "IT Faculty",
+    degree: "Bachelor",
+    language: "EN",
+    file: "MATMIE.md",
+  },
+};
+
+const PROGRAM_FAMILY_BY_CODE = {
+  COMCEH: "COM",
+  COMFCI: "COM",
+  COMSE: "COM",
+  EIMIT: "EIMIT",
+  MATDAIS: "MATDAIS",
+  MATMIE: "MATMIE",
 };
 
 const ELECTIVE_GROUP_NAMES = {
@@ -210,32 +243,48 @@ function parseElectivesMarkdown(content) {
   const lines = content.split(/\r?\n/);
   const sourceTitle =
     lines.find((line) => line.startsWith("# "))?.replace(/^#\s+/, "") ??
-    "COM Department Electives";
+    "Combined Department Electives";
   const sourceStatus = lines.find((line) => line.startsWith("Status:"))?.replace(/^Status:\s*/, "") ?? null;
 
   let currentGroupCode = null;
+  let insideCombinedSection = false;
   const groups = [];
   const courses = [];
 
   for (const line of lines) {
+    if (/^##\s+Department-Specific Electives/i.test(line)) {
+      currentGroupCode = null;
+      insideCombinedSection = false;
+      continue;
+    }
+
     const groupMatch = line.match(/^##\s+(AE|NAE|NTE)\s+-\s+(.+)$/i);
     if (groupMatch) {
       currentGroupCode = groupMatch[1].toUpperCase();
+      insideCombinedSection = /combined/i.test(groupMatch[2]);
       groups.push({
         code: currentGroupCode,
         name: ELECTIVE_GROUP_NAMES[currentGroupCode] ?? normalizeText(groupMatch[2]),
         description: normalizeText(groupMatch[2]),
-        scope: "com-department",
+        scope: "combined-departments",
       });
       continue;
     }
 
-    const cells = parseTableRow(line);
-    if (!cells || !currentGroupCode) {
+    if (!insideCombinedSection || !currentGroupCode || line.startsWith("### ")) {
       continue;
     }
 
-    const [, courseCode, courseName, theoryHours, practiceHoursRaw, credits] = cells;
+    const cells = parseTableRow(line);
+    if (!cells) {
+      continue;
+    }
+
+    if (cells[0] === "Course Code" || cells[0] === "Department") {
+      continue;
+    }
+
+    const [courseCode, courseName, theoryHours, practiceHoursRaw, credits, departmentsRaw = ""] = cells;
     courses.push({
       electiveGroupCode: currentGroupCode,
       sourceTitle,
@@ -245,6 +294,10 @@ function parseElectivesMarkdown(content) {
       theoryHours: parseInteger(theoryHours),
       practiceHoursRaw: normalizeText(practiceHoursRaw),
       credits: parseInteger(credits),
+      departments: departmentsRaw
+        .split(",")
+        .map((department) => normalizeText(department).toUpperCase())
+        .filter(Boolean),
     });
   }
 
@@ -326,7 +379,7 @@ async function main() {
   }
 
   const electivesMarkdown = await fs.readFile(
-    path.join(dataDir, "COM_Department_Electives.md"),
+    path.join(dataDir, "Combined_Department_Electives.md"),
     "utf8",
   );
   const electivesData = parseElectivesMarkdown(electivesMarkdown);
@@ -334,6 +387,7 @@ async function main() {
   const courseRegistry = createCourseRegistry();
   const unresolvedOptionCodes = new Set();
   const electiveCatalogByCode = new Map();
+  const electiveCatalogEntries = [];
 
   for (const electiveCourse of electivesData.courses) {
     const courseRecord = courseRegistry.ensure({
@@ -345,6 +399,12 @@ async function main() {
       credits: electiveCourse.credits,
     });
     electiveCatalogByCode.set(electiveCourse.courseCode, courseRecord);
+    electiveCatalogEntries.push({
+      courseCode: electiveCourse.courseCode,
+      courseHash: courseRecord.source_hash,
+      electiveGroupCode: electiveCourse.electiveGroupCode,
+      departments: electiveCourse.departments,
+    });
   }
 
   const offeringGroups = new Map();
@@ -404,6 +464,28 @@ async function main() {
     }
   }
 
+  for (const offering of offeringGroups.values()) {
+    if (offering.option_codes.size > 0 || !offering.elective_group_code) {
+      continue;
+    }
+
+    const applicableFamilies = new Set(
+      [...offering.program_codes]
+        .map((programCode) => PROGRAM_FAMILY_BY_CODE[programCode])
+        .filter(Boolean),
+    );
+
+    for (const entry of electiveCatalogEntries) {
+      if (entry.electiveGroupCode !== offering.elective_group_code) {
+        continue;
+      }
+
+      if (entry.departments.some((department) => applicableFamilies.has(department))) {
+        offering.option_codes.add(entry.courseCode);
+      }
+    }
+  }
+
   for (const optionCode of [...unresolvedOptionCodes].sort()) {
     const placeholderCourse = courseRegistry.ensure({
       sourceKind: "placeholder_option",
@@ -453,16 +535,20 @@ async function main() {
       .map((course) => [course.course_code, course.id]),
   );
 
-  const electiveGroupCoursesToInsert = electivesData.courses.map((course) => {
-    const normalizedKey = [course.courseCode, course.courseName, course.theoryHours, course.practiceHoursRaw, course.credits]
-      .map((item) => normalizeText(String(item)).toLowerCase())
-      .join("|");
+  const electiveGroupCoursesToInsert = [...new Map(
+    electivesData.courses.map((course) => {
+      const normalizedKey = [course.courseCode, course.courseName, course.theoryHours, course.practiceHoursRaw, course.credits]
+        .map((item) => normalizeText(String(item)).toLowerCase())
+        .join("|");
 
-    return {
-      elective_group_id: electiveGroupIdByCode.get(course.electiveGroupCode),
-      course_id: courseIdByHash.get(hashKey(normalizedKey)),
-    };
-  });
+      const row = {
+        elective_group_id: electiveGroupIdByCode.get(course.electiveGroupCode),
+        course_id: courseIdByHash.get(hashKey(normalizedKey)),
+      };
+
+      return [`${row.elective_group_id}:${row.course_id}`, row];
+    }),
+  ).values()];
 
   const { error: electiveGroupCoursesError } = await supabase
     .from("elective_group_courses")

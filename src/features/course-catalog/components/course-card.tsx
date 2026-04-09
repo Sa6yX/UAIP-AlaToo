@@ -11,6 +11,11 @@ type CourseCardProps = {
   onOcsClick: (course: Course) => void;
 };
 
+type ChipTone = {
+  bg: string;
+  text: string;
+};
+
 function ArrowUpRightIcon() {
   return (
     <svg
@@ -29,17 +34,61 @@ function ArrowUpRightIcon() {
   );
 }
 
-function DepartmentChip({ department }: { department: Department }) {
-  const meta = DEPT_META[department];
-
+function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
   return (
     <span
       className="rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.04em]"
-      style={{ backgroundColor: meta.bg, color: meta.text }}
+      style={{ backgroundColor: tone.bg, color: tone.text }}
     >
-      {department === "Elective" ? "ELECTIVE" : department}
+      {label}
     </span>
   );
+}
+
+function getElectiveGroupTone(groupCode: string | null | undefined): ChipTone {
+  switch (groupCode) {
+    case "AE":
+      return { bg: "#dbeafe", text: "#1d4ed8" };
+    case "NAE":
+      return { bg: "#fffbeb", text: "#b45309" };
+    case "NTE":
+      return { bg: "#ecfdf5", text: "#047857" };
+    default:
+      return { bg: DEPT_META.Elective.bg, text: DEPT_META.Elective.text };
+  }
+}
+
+function getAudienceDepartmentBadges(course: Course) {
+  const departments = course.departments ?? [];
+
+  if (!course.isElective) {
+    return departments.length > 0 ? departments : [course.dept];
+  }
+
+  const collapsed = new Set<string>();
+
+  for (const department of departments) {
+    if (department.startsWith("COM")) {
+      collapsed.add("COM");
+    } else {
+      collapsed.add(department);
+    }
+  }
+
+  return [...collapsed];
+}
+
+function getBadgeTone(label: string): ChipTone {
+  if (label === "COM") {
+    return { bg: "#eef2ff", text: "#4338ca" };
+  }
+
+  if (label in DEPT_META) {
+    const meta = DEPT_META[label as Department];
+    return { bg: meta.bg, text: meta.text };
+  }
+
+  return { bg: "#f3f4f6", text: "#4b5563" };
 }
 
 export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
@@ -49,12 +98,8 @@ export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
         ? `${course.teachers[0]} +${course.teachers.length - 1} more`
         : course.teachers[0]
       : "Teacher not assigned yet";
-  const audienceDepartments = course.departments ?? [];
-  const showDepartmentChips = course.isElective
-    ? audienceDepartments.slice(0, 3)
-    : audienceDepartments.length > 0
-      ? audienceDepartments.slice(0, 3)
-      : [course.dept];
+  const audienceBadges = getAudienceDepartmentBadges(course);
+  const showAudienceBadges = course.isElective ? audienceBadges : audienceBadges.slice(0, 3);
 
   const handleOpen = () => onSelect(course);
 
@@ -75,13 +120,18 @@ export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
     >
       <div className="mb-2.5 flex items-start justify-between gap-3">
         <div className="flex flex-wrap gap-1.5">
-          {course.isElective ? <DepartmentChip department="Elective" /> : null}
-          {showDepartmentChips.map((department) => (
-            <DepartmentChip key={`${course.id}-${department}`} department={department} />
+          {course.isElective ? (
+            <LabelChip
+              label={course.electiveGroupCode || "Elective"}
+              tone={getElectiveGroupTone(course.electiveGroupCode)}
+            />
+          ) : null}
+          {showAudienceBadges.map((badge) => (
+            <LabelChip key={`${course.id}-${badge}`} label={badge} tone={getBadgeTone(badge)} />
           ))}
-          {audienceDepartments.length > showDepartmentChips.length ? (
+          {!course.isElective && audienceBadges.length > showAudienceBadges.length ? (
             <span className="rounded-full bg-[var(--uaip-gray-100)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-500)]">
-              +{audienceDepartments.length - showDepartmentChips.length}
+              +{audienceBadges.length - showAudienceBadges.length}
             </span>
           ) : null}
         </div>

@@ -11,23 +11,72 @@ type CourseModalProps = {
   onClose: () => void;
 };
 
+type ChipTone = {
+  bg: string;
+  text: string;
+};
+
 function getTeacherInitial(teacher: string) {
   const parts = teacher.trim().split(/\s+/);
   const lastName = parts[parts.length - 1] ?? "?";
   return lastName.charAt(0).toUpperCase();
 }
 
-function DepartmentChip({ department }: { department: Department }) {
-  const meta = DEPT_META[department];
-
+function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
   return (
     <span
       className="rounded-full px-2.5 py-1 text-[0.6875rem] font-bold tracking-[0.04em]"
-      style={{ backgroundColor: meta.bg, color: meta.text }}
+      style={{ backgroundColor: tone.bg, color: tone.text }}
     >
-      {department === "Elective" ? "ELECTIVE" : department}
+      {label}
     </span>
   );
+}
+
+function getElectiveGroupTone(groupCode: string | null | undefined): ChipTone {
+  switch (groupCode) {
+    case "AE":
+      return { bg: "#dbeafe", text: "#1d4ed8" };
+    case "NAE":
+      return { bg: "#fffbeb", text: "#b45309" };
+    case "NTE":
+      return { bg: "#ecfdf5", text: "#047857" };
+    default:
+      return { bg: DEPT_META.Elective.bg, text: DEPT_META.Elective.text };
+  }
+}
+
+function getAudienceDepartmentBadges(course: Course) {
+  const departments = course.departments ?? [];
+
+  if (!course.isElective) {
+    return departments.length > 0 ? departments : [course.dept];
+  }
+
+  const collapsed = new Set<string>();
+
+  for (const department of departments) {
+    if (department.startsWith("COM")) {
+      collapsed.add("COM");
+    } else {
+      collapsed.add(department);
+    }
+  }
+
+  return [...collapsed];
+}
+
+function getBadgeTone(label: string): ChipTone {
+  if (label === "COM") {
+    return { bg: "#eef2ff", text: "#4338ca" };
+  }
+
+  if (label in DEPT_META) {
+    const meta = DEPT_META[label as Department];
+    return { bg: meta.bg, text: meta.text };
+  }
+
+  return { bg: "#f3f4f6", text: "#4b5563" };
 }
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
@@ -98,11 +147,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     return null;
   }
 
-  const departmentChips = course.departments?.length
-    ? course.departments
-    : course.isElective
-      ? []
-      : [course.dept];
+  const audienceBadges = getAudienceDepartmentBadges(course);
 
   return (
     <div
@@ -119,9 +164,14 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
         <div className="shrink-0 border-b border-[var(--uaip-gray-100)] bg-white px-6 py-7 md:px-9 md:py-8">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div className="flex flex-wrap gap-1.5">
-              {course.isElective ? <DepartmentChip department="Elective" /> : null}
-              {departmentChips.map((department) => (
-                <DepartmentChip key={`${course.id}-${department}`} department={department} />
+              {course.isElective ? (
+                <LabelChip
+                  label={course.electiveGroupCode || "Elective"}
+                  tone={getElectiveGroupTone(course.electiveGroupCode)}
+                />
+              ) : null}
+              {audienceBadges.map((badge) => (
+                <LabelChip key={`${course.id}-${badge}`} label={badge} tone={getBadgeTone(badge)} />
               ))}
             </div>
 

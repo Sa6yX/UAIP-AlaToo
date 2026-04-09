@@ -4,7 +4,7 @@ export type Department =
   | "COMCEH"
   | "COMSE"
   | "MATDAIS"
-  | "IEMIT"
+  | "EIMIT"
   | "Elective";
 
 export type DepartmentFilter =
@@ -14,7 +14,7 @@ export type DepartmentFilter =
   | "COMCEH"
   | "COMSE"
   | "MATDAIS"
-  | "IEMIT"
+  | "EIMIT"
   | "Electives";
 
 export type StudyGrade = "1st Grade" | "2nd Grade" | "3rd Grade" | "4th Grade";

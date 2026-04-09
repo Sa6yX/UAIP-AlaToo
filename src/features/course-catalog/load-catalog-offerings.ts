@@ -12,7 +12,7 @@ const KNOWN_DEPARTMENTS: Department[] = [
   "COMCEH",
   "COMSE",
   "MATDAIS",
-  "IEMIT",
+  "EIMIT",
   "Elective",
 ];
 

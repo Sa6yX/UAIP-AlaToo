@@ -14,7 +14,7 @@ export const DEPARTMENTS: DepartmentFilter[] = [
   "COMCEH",
   "COMSE",
   "MATDAIS",
-  "IEMIT",
+  "EIMIT",
   "Electives",
 ];
 
@@ -49,7 +49,7 @@ export const DEPT_META: Record<Department, DepartmentMeta> = {
     bg: "#faf5ff",
     text: "#7e22ce",
   },
-  IEMIT: {
+  EIMIT: {
     label: "IT Management",
     color: "#b45309",
     bg: "#fff7ed",
