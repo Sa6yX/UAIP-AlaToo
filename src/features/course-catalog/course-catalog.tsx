@@ -2,26 +2,58 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { COURSES, DEPARTMENTS, GRADE_SCALE } from "./data";
+import { COURSES, DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
+import { FilterSelect } from "./components/grade-select";
+import { InfoModal } from "./components/electives-hint-modal";
 import { getEdgeFadeOpacity } from "./scroll-fade";
-import type { Course, DepartmentFilter } from "./types";
+import type { Course, DepartmentFilter, StudyGrade } from "./types";
+
+const ELECTIVES_HINT_STORAGE_KEY = "uaip-electives-hint-dismissed";
+const ELECTIVES_HINT_TEXT =
+  "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
+const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 
 export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
+  const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
   const [search, setSearch] = useState("");
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
+  const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
+  const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
+  const [showOcsSoonModal, setShowOcsSoonModal] = useState(false);
+  const [neverShowElectivesHint, setNeverShowElectivesHint] = useState(false);
+  const [electivesHintDismissed, setElectivesHintDismissed] = useState(
+    () =>
+      typeof window !== "undefined" &&
+      window.localStorage.getItem(ELECTIVES_HINT_STORAGE_KEY) === "1",
+  );
   const [pageBottomFadeOpacity, setPageBottomFadeOpacity] = useState(0);
 
   useEffect(() => {
-    if (!selectedCourse) {
+    const hasOpenOverlay = Boolean(selectedCourse || showElectivesHintModal || showOcsSoonModal);
+
+    if (!hasOpenOverlay) {
       return;
     }
 
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setSelectedCourse(null);
+        if (selectedCourse) {
+          setSelectedCourse(null);
+          return;
+        }
+
+        if (showOcsSoonModal) {
+          setShowOcsSoonModal(false);
+          return;
+        }
+
+        if (showElectivesHintModal) {
+          setShowElectivesHintModal(false);
+          setPendingCourse(null);
+        }
       }
     };
 
@@ -42,7 +74,7 @@ export function CourseCatalog() {
       document.body.style.paddingRight = previousPaddingRight;
       window.removeEventListener("keydown", onEscape);
     };
-  }, [selectedCourse]);
+  }, [selectedCourse, showElectivesHintModal, showOcsSoonModal]);
 
   useEffect(() => {
     const updatePageFadeState = () => {
@@ -83,14 +115,60 @@ export function CourseCatalog() {
         course.name.toLowerCase().includes(normalizedSearch) ||
         course.teachers.some((teacher) => teacher.toLowerCase().includes(normalizedSearch));
 
-      return matchDepartment && matchSearch;
-    });
-  }, [activeDept, search]);
+      const matchGrade = activeGrade.length === 0 || course.grade === activeGrade;
 
-  const electiveCount = useMemo(
-    () => COURSES.filter((course) => course.dept === "Elective").length,
-    [],
-  );
+      return matchDepartment && matchSearch && matchGrade;
+    });
+  }, [activeDept, activeGrade, search]);
+
+  const openElectivesHintModal = (nextCourse: Course | null = null) => {
+    if (electivesHintDismissed) {
+      if (nextCourse) {
+        setSelectedCourse(nextCourse);
+      }
+
+      return;
+    }
+
+    setPendingCourse(nextCourse);
+    setNeverShowElectivesHint(false);
+    setShowElectivesHintModal(true);
+  };
+
+  const handleElectivesHintClose = () => {
+    if (neverShowElectivesHint && typeof window !== "undefined") {
+      window.localStorage.setItem(ELECTIVES_HINT_STORAGE_KEY, "1");
+      setElectivesHintDismissed(true);
+    }
+
+    setShowElectivesHintModal(false);
+
+    if (pendingCourse) {
+      setSelectedCourse(pendingCourse);
+      setPendingCourse(null);
+    }
+  };
+
+  const handleDepartmentSelect = (department: DepartmentFilter) => {
+    setActiveDept(department);
+
+    if (department === "Electives") {
+      openElectivesHintModal();
+    }
+  };
+
+  const handleCourseSelect = (course: Course) => {
+    if (activeDept === "All" && course.dept === "Elective") {
+      openElectivesHintModal(course);
+      return;
+    }
+
+    setSelectedCourse(course);
+  };
+
+  const handleOcsClick = () => {
+    setShowOcsSoonModal(true);
+  };
 
   return (
     <div className="min-h-screen bg-[var(--uaip-bg)] font-sans">
@@ -100,75 +178,45 @@ export function CourseCatalog() {
         style={{ opacity: pageBottomFadeOpacity }}
       />
       <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
-        <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-start justify-between gap-3">
+        <div className="mx-auto w-full max-w-[1200px]">
           <div>
             <p className="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--uaip-gray-400)]">
-              Ala-Too International University
+              ALA-TOO INTERNATIONAL UNIVERSITY / UAIP
             </p>
-            <h1 className="font-heading mt-0.5 text-[clamp(1.4rem,1.29rem+0.56vw,1.75rem)] font-extrabold text-[var(--uaip-text-primary)]">
+            <h1 className="mt-1 text-[0.92rem] font-bold tracking-[0.12em] text-[var(--uaip-gray-500)] md:text-[1rem]">
               Course Catalog
             </h1>
-          </div>
-
-          <div className="text-right text-xs text-[var(--uaip-gray-400)]">
-            <p className="font-semibold text-[var(--uaip-gray-500)]">
-              {COURSES.length} courses · {electiveCount} electives
-            </p>
-            <p>No login required</p>
           </div>
         </div>
       </header>
 
       <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
-        <section className="mb-7 flex flex-wrap items-center gap-3">
-          <input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search courses or teachers…"
-            className="h-11 min-w-[210px] flex-1 rounded-[10px] border border-[var(--uaip-gray-200)] bg-white px-4 text-base text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)]"
-          />
+        <section className="mb-7">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(0,1.25fr)_220px_220px] md:items-start">
+            <input
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search courses or teachers…"
+              className="col-span-2 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
+            />
 
-          <div className="flex flex-wrap gap-1.5">
-            {DEPARTMENTS.map((department) => {
-              const isActive = activeDept === department;
+            <FilterSelect
+              options={STUDY_GRADES}
+              value={activeGrade}
+              onChange={setActiveGrade}
+              placeholder="All grades"
+              allLabel="All grades"
+            />
 
-              return (
-                <button
-                  key={department}
-                  type="button"
-                  onClick={() => setActiveDept(department)}
-                  className="rounded-lg px-4 py-2 text-[0.8125rem] font-semibold transition"
-                  style={{
-                    border: isActive
-                      ? "1.5px solid transparent"
-                      : "1.5px solid var(--uaip-gray-200)",
-                    background: isActive ? "var(--uaip-text-primary)" : "#ffffff",
-                    color: isActive ? "#ffffff" : "var(--uaip-gray-500)",
-                  }}
-                >
-                  {department}
-                </button>
-              );
-            })}
+            <FilterSelect
+              options={DEPARTMENTS.filter((department) => department !== "All")}
+              value={activeDept === "All" ? "" : activeDept}
+              onChange={(value) => handleDepartmentSelect(value || "All")}
+              placeholder="All sections"
+              allLabel="All sections"
+            />
           </div>
         </section>
-
-        {(activeDept === "All" || activeDept === "Electives") && (
-          <section className="mb-6 flex items-start gap-3 rounded-xl border border-[#fde68a] bg-[#fffbeb] px-4 py-3.5">
-            <span className="text-lg" aria-hidden>
-              💡
-            </span>
-            <div>
-              <h2 className="font-heading text-[clamp(1.03rem,1rem+0.16vw,1.1rem)] font-bold text-[#92400e]">
-                About electives
-              </h2>
-              <p className="mt-0.5 text-base leading-relaxed text-[#b45309]">
-                Electives are open to all departments. You choose one from the full list each
-                semester. Review the grading breakdown and learning outcomes before choosing.
-              </p>
-            </div>
-          </section>
-        )}
 
         <section className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-[linear-gradient(135deg,#1e3a5f_0%,#2563eb_100%)] px-5 py-4">
           <div>
@@ -190,15 +238,15 @@ export function CourseCatalog() {
           </div>
         </section>
 
-        <p className="mb-4 text-[0.8125rem] text-[var(--uaip-gray-400)]">
-          {filteredCourses.length} course{filteredCourses.length === 1 ? "" : "s"}
-          {search ? ` matching "${search}"` : ""}
-        </p>
-
         {filteredCourses.length > 0 ? (
           <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
             {filteredCourses.map((course) => (
-              <CourseCard key={course.id} course={course} onSelect={setSelectedCourse} />
+              <CourseCard
+                key={course.id}
+                course={course}
+                onSelect={handleCourseSelect}
+                onOcsClick={handleOcsClick}
+              />
             ))}
           </section>
         ) : (
@@ -212,6 +260,21 @@ export function CourseCatalog() {
         )}
       </div>
 
+      <InfoModal
+        isOpen={showElectivesHintModal}
+        title="About electives"
+        description={ELECTIVES_HINT_TEXT}
+        showNeverShowAgain
+        neverShowAgain={neverShowElectivesHint}
+        onNeverShowAgainChange={setNeverShowElectivesHint}
+        onClose={handleElectivesHintClose}
+      />
+      <InfoModal
+        isOpen={showOcsSoonModal}
+        title="OCS"
+        description={OCS_COMING_SOON_TEXT}
+        onClose={() => setShowOcsSoonModal(false)}
+      />
       <CourseModal course={selectedCourse} onClose={() => setSelectedCourse(null)} />
     </div>
   );

@@ -17,6 +17,8 @@ export type DepartmentFilter =
   | "IEMIT"
   | "Electives";
 
+export type StudyGrade = "1st Grade" | "2nd Grade" | "3rd Grade" | "4th Grade";
+
 export type CourseComponent = {
   name: string;
   weight: number;
@@ -25,6 +27,7 @@ export type CourseComponent = {
 export type Course = {
   id: number;
   dept: Department;
+  grade: StudyGrade;
   name: string;
   teachers: string[];
   credits: number;

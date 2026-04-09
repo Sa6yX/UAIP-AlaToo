@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Sora } from "next/font/google";
+import { DM_Sans, Plus_Jakarta_Sans } from "next/font/google";
 
 import { QueryProvider } from "@/providers/query-provider";
 
@@ -11,8 +11,8 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const sora = Sora({
-  variable: "--font-sora",
+const plusJakartaSans = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta-sans",
   subsets: ["latin", "latin-ext"],
   display: "swap",
   weight: ["700", "800"],
@@ -30,7 +30,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${sora.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${dmSans.variable} ${plusJakartaSans.variable} h-full antialiased`}
+    >
       <body className="min-h-full bg-[var(--uaip-bg)] text-[var(--uaip-text-primary)]">
         <QueryProvider>{children}</QueryProvider>
       </body>

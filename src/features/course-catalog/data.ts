@@ -1,4 +1,11 @@
-import type { Course, Department, DepartmentFilter, DepartmentMeta, GradeScaleItem } from "./types";
+import type {
+  Course,
+  Department,
+  DepartmentFilter,
+  DepartmentMeta,
+  GradeScaleItem,
+  StudyGrade,
+} from "./types";
 
 export const DEPARTMENTS: DepartmentFilter[] = [
   "All",
@@ -64,12 +71,15 @@ export const GRADE_SCALE: GradeScaleItem[] = [
   { grade: "F", range: "< 50%", color: "#dc2626" },
 ];
 
+export const STUDY_GRADES: StudyGrade[] = ["1st Grade", "2nd Grade", "3rd Grade", "4th Grade"];
+
 export const GRADING_COMPONENT_COLORS = ["#2563eb", "#7c3aed", "#059669", "#d97706", "#dc2626"];
 
 export const COURSES: Course[] = [
   {
     id: 1,
     dept: "MATMIE",
+    grade: "4th Grade",
     name: "Machine Learning",
     teachers: ["Dr. Aibek Nurlanov", "Ms. Dinara Seitkali"],
     credits: 5,
@@ -87,6 +97,7 @@ export const COURSES: Course[] = [
   {
     id: 2,
     dept: "MATMIE",
+    grade: "2nd Grade",
     name: "Algorithms & Data Structures",
     teachers: ["Prof. Ruslan Bekov"],
     credits: 4,
@@ -104,6 +115,7 @@ export const COURSES: Course[] = [
   {
     id: 3,
     dept: "COMFCI",
+    grade: "1st Grade",
     name: "Digital Design",
     teachers: ["Ms. Kamila Asanova", "Mr. Timur Zhaksybekov"],
     credits: 4,
@@ -121,6 +133,7 @@ export const COURSES: Course[] = [
   {
     id: 4,
     dept: "COMFCI",
+    grade: "2nd Grade",
     name: "Media Production",
     teachers: ["Dr. Aizat Beisembayeva"],
     credits: 3,
@@ -138,6 +151,7 @@ export const COURSES: Course[] = [
   {
     id: 5,
     dept: "COMCEH",
+    grade: "3rd Grade",
     name: "Network Security",
     teachers: ["Mr. Erlan Dzhaksybekov"],
     credits: 5,
@@ -155,6 +169,7 @@ export const COURSES: Course[] = [
   {
     id: 6,
     dept: "Elective",
+    grade: "2nd Grade",
     name: "Entrepreneurship & Startups",
     teachers: ["Mr. Bakai Omurbekov"],
     credits: 2,
@@ -172,6 +187,7 @@ export const COURSES: Course[] = [
   {
     id: 7,
     dept: "Elective",
+    grade: "1st Grade",
     name: "Introduction to Psychology",
     teachers: ["Dr. Gulnara Mamytbekova"],
     credits: 2,
@@ -189,6 +205,7 @@ export const COURSES: Course[] = [
   {
     id: 8,
     dept: "Elective",
+    grade: "3rd Grade",
     name: "Data Visualization",
     teachers: ["Ms. Asel Nurova", "Mr. Arman Bekzhanov"],
     credits: 2,

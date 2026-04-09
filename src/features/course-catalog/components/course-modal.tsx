@@ -143,7 +143,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             <div
               aria-hidden="true"
               className={cn(
-                "pointer-events-none absolute bottom-0 right-0 h-[1.7em] w-[58%] bg-gradient-to-r from-transparent via-white/88 to-white transition-opacity duration-300",
+                "pointer-events-none absolute bottom-0 right-0 h-[1.7em] w-[25%] min-w-[96px] bg-gradient-to-r from-transparent via-white/88 to-white transition-opacity duration-300",
                 isHeaderCondensed ? "opacity-100" : "opacity-0",
               )}
             />
