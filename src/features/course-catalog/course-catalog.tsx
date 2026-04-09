@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { COURSES, DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
+import { DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
 import { CourseCard } from "./components/course-card";
 import { CourseModal } from "./components/course-modal";
 import { FilterSelect } from "./components/grade-select";
 import { InfoModal } from "./components/electives-hint-modal";
+import { loadCatalogCourses } from "./load-catalog-offerings";
 import { getEdgeFadeOpacity } from "./scroll-fade";
 import type { Course, DepartmentFilter, StudyGrade } from "./types";
 
@@ -19,6 +20,9 @@ export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
   const [search, setSearch] = useState("");
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoadingCourses, setIsLoadingCourses] = useState(true);
+  const [catalogLoadError, setCatalogLoadError] = useState<string | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
@@ -77,6 +81,41 @@ export function CourseCatalog() {
   }, [selectedCourse, showElectivesHintModal, showOcsSoonModal]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const loadCourses = async () => {
+      try {
+        const loadedCourses = await loadCatalogCourses();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setCourses(loadedCourses);
+        setCatalogLoadError(null);
+      } catch (error) {
+        if (!isMounted) {
+          return;
+        }
+
+        setCatalogLoadError(
+          error instanceof Error ? error.message : "Could not load course catalog data.",
+        );
+      } finally {
+        if (isMounted) {
+          setIsLoadingCourses(false);
+        }
+      }
+    };
+
+    void loadCourses();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     const updatePageFadeState = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const viewportHeight = window.innerHeight;
@@ -99,27 +138,54 @@ export function CourseCatalog() {
       window.removeEventListener("scroll", updatePageFadeState);
       window.removeEventListener("resize", updatePageFadeState);
     };
-  }, [activeDept, search]);
+  }, [activeDept, activeGrade, search, courses.length, isLoadingCourses]);
+
+  const availableDepartments = useMemo(() => {
+    const availableProgramCodes = new Set(
+      courses.flatMap((course) => course.departments ?? []).filter((department) => department !== "Elective"),
+    );
+    const hasElectives = courses.some((course) => course.isElective);
+
+    return DEPARTMENTS.filter((department) => {
+      if (department === "All") {
+        return true;
+      }
+
+      if (department === "Electives") {
+        return hasElectives;
+      }
+
+      return availableProgramCodes.has(department);
+    });
+  }, [courses]);
+
+  useEffect(() => {
+    if (!availableDepartments.includes(activeDept)) {
+      setActiveDept("All");
+    }
+  }, [activeDept, availableDepartments]);
 
   const filteredCourses = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
 
-    return COURSES.filter((course) => {
+    return courses.filter((course) => {
+      const courseDepartments = course.departments ?? [];
       const matchDepartment =
         activeDept === "All" ||
-        course.dept === activeDept ||
-        (activeDept === "Electives" && course.dept === "Elective");
+        (activeDept === "Electives" && Boolean(course.isElective)) ||
+        courseDepartments.includes(activeDept as typeof courseDepartments[number]);
 
       const matchSearch =
         normalizedSearch.length === 0 ||
         course.name.toLowerCase().includes(normalizedSearch) ||
+        (course.code ?? "").toLowerCase().includes(normalizedSearch) ||
         course.teachers.some((teacher) => teacher.toLowerCase().includes(normalizedSearch));
 
       const matchGrade = activeGrade.length === 0 || course.grade === activeGrade;
 
       return matchDepartment && matchSearch && matchGrade;
     });
-  }, [activeDept, activeGrade, search]);
+  }, [activeDept, activeGrade, courses, search]);
 
   const openElectivesHintModal = (nextCourse: Course | null = null) => {
     if (electivesHintDismissed) {
@@ -158,7 +224,7 @@ export function CourseCatalog() {
   };
 
   const handleCourseSelect = (course: Course) => {
-    if (activeDept === "All" && course.dept === "Elective") {
+    if (activeDept === "All" && course.isElective) {
       openElectivesHintModal(course);
       return;
     }
@@ -209,7 +275,7 @@ export function CourseCatalog() {
             />
 
             <FilterSelect
-              options={DEPARTMENTS.filter((department) => department !== "All")}
+              options={availableDepartments.filter((department) => department !== "All")}
               value={activeDept === "All" ? "" : activeDept}
               onChange={(value) => handleDepartmentSelect(value || "All")}
               placeholder="All sections"
@@ -238,7 +304,23 @@ export function CourseCatalog() {
           </div>
         </section>
 
-        {filteredCourses.length > 0 ? (
+        {catalogLoadError ? (
+          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+            <p className="text-3xl">⚠️</p>
+            <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
+              Could not load catalog data
+            </h3>
+            <p className="mt-1 text-base">{catalogLoadError}</p>
+          </section>
+        ) : isLoadingCourses ? (
+          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+            <p className="text-3xl">⏳</p>
+            <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
+              Loading course catalog…
+            </h3>
+            <p className="mt-1 text-base">Fetching live data from UAIP database</p>
+          </section>
+        ) : filteredCourses.length > 0 ? (
           <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
             {filteredCourses.map((course) => (
               <CourseCard

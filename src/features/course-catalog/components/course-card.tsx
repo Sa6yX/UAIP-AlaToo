@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from "react";
 
 import { DEPT_META } from "../data";
-import type { Course } from "../types";
+import type { Course, Department } from "../types";
 
 import { GradingBar } from "./grading-bar";
 
@@ -29,9 +29,32 @@ function ArrowUpRightIcon() {
   );
 }
 
+function DepartmentChip({ department }: { department: Department }) {
+  const meta = DEPT_META[department];
+
+  return (
+    <span
+      className="rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.04em]"
+      style={{ backgroundColor: meta.bg, color: meta.text }}
+    >
+      {department === "Elective" ? "ELECTIVE" : department}
+    </span>
+  );
+}
+
 export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
-  const dept = DEPT_META[course.dept];
-  const hasMultipleTeachers = course.teachers.length > 1;
+  const teacherPreview =
+    course.teachers.length > 0
+      ? course.teachers.length > 1
+        ? `${course.teachers[0]} +${course.teachers.length - 1} more`
+        : course.teachers[0]
+      : "Teacher not assigned yet";
+  const audienceDepartments = course.departments ?? [];
+  const showDepartmentChips = course.isElective
+    ? audienceDepartments.slice(0, 3)
+    : audienceDepartments.length > 0
+      ? audienceDepartments.slice(0, 3)
+      : [course.dept];
 
   const handleOpen = () => onSelect(course);
 
@@ -51,12 +74,17 @@ export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
       className="group relative cursor-pointer rounded-[14px] border border-[var(--uaip-gray-200)] bg-white px-5 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
       <div className="mb-2.5 flex items-start justify-between gap-3">
-        <span
-          className="rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.04em]"
-          style={{ backgroundColor: dept.bg, color: dept.text }}
-        >
-          {course.dept === "Elective" ? "ELECTIVE" : course.dept}
-        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {course.isElective ? <DepartmentChip department="Elective" /> : null}
+          {showDepartmentChips.map((department) => (
+            <DepartmentChip key={`${course.id}-${department}`} department={department} />
+          ))}
+          {audienceDepartments.length > showDepartmentChips.length ? (
+            <span className="rounded-full bg-[var(--uaip-gray-100)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-500)]">
+              +{audienceDepartments.length - showDepartmentChips.length}
+            </span>
+          ) : null}
+        </div>
 
         <div className="flex items-start gap-2">
           <span className="pt-1 text-[0.6875rem] text-[var(--uaip-gray-400)]">
@@ -81,14 +109,8 @@ export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
       </h3>
 
       <p className="mt-1 text-xs text-[var(--uaip-gray-500)]">
-        {hasMultipleTeachers ? (
-          <>
-            {course.teachers[0]}{" "}
-            <span className="text-[var(--uaip-gray-300)]">+{course.teachers.length - 1} more</span>
-          </>
-        ) : (
-          course.teachers[0]
-        )}
+        {course.code ? `${course.code} · ` : ""}
+        {teacherPreview}
       </p>
 
       <div className="relative mt-2.5 overflow-hidden text-sm leading-[1.55] text-[var(--uaip-gray-600)]">

@@ -121,7 +121,7 @@
 
 ## Elective Courses
 
-- See faculty-wide elective catalog: [IT_Faculty_Electives.md](IT_Faculty_Electives.md)
+- See COM department elective catalog: [COM_Department_Electives.md](COM_Department_Electives.md)
 
 ---
 

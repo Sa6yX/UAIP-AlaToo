@@ -341,6 +341,37 @@ export type Database = {
       }
     }
     Views: {
+      catalog_cards_v1: {
+        Row: {
+          browse_id: string | null
+          course_code: string | null
+          course_id: string | null
+          course_name: string | null
+          credits: number | null
+          description: string | null
+          elective_group_code: string | null
+          elective_group_name: string | null
+          grade: number | null
+          grade_label: string | null
+          grading_components: Json | null
+          is_elective: boolean | null
+          is_placeholder: boolean | null
+          notes_raw: string | null
+          offering_id: string | null
+          outcomes: Json | null
+          overall_semester: number | null
+          practice_hours_raw: string | null
+          program_codes: string[] | null
+          program_names: string[] | null
+          semester_in_grade: number | null
+          shared_program_count: number | null
+          source_kind: string | null
+          source_type: string | null
+          teachers: Json | null
+          theory_hours: number | null
+        }
+        Relationships: []
+      }
       catalog_offerings_v1: {
         Row: {
           audience_id: string | null

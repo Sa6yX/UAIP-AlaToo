@@ -208,7 +208,9 @@ function parseProgramMarkdown(content, programMeta) {
 
 function parseElectivesMarkdown(content) {
   const lines = content.split(/\r?\n/);
-  const sourceTitle = lines.find((line) => line.startsWith("# "))?.replace(/^#\s+/, "") ?? "IT Faculty Electives";
+  const sourceTitle =
+    lines.find((line) => line.startsWith("# "))?.replace(/^#\s+/, "") ??
+    "COM Department Electives";
   const sourceStatus = lines.find((line) => line.startsWith("Status:"))?.replace(/^Status:\s*/, "") ?? null;
 
   let currentGroupCode = null;
@@ -223,7 +225,7 @@ function parseElectivesMarkdown(content) {
         code: currentGroupCode,
         name: ELECTIVE_GROUP_NAMES[currentGroupCode] ?? normalizeText(groupMatch[2]),
         description: normalizeText(groupMatch[2]),
-        scope: "it-faculty",
+        scope: "com-department",
       });
       continue;
     }
@@ -323,7 +325,10 @@ async function main() {
     programResults.push(parseProgramMarkdown(content, meta));
   }
 
-  const electivesMarkdown = await fs.readFile(path.join(dataDir, "IT_Faculty_Electives.md"), "utf8");
+  const electivesMarkdown = await fs.readFile(
+    path.join(dataDir, "COM_Department_Electives.md"),
+    "utf8",
+  );
   const electivesData = parseElectivesMarkdown(electivesMarkdown);
 
   const courseRegistry = createCourseRegistry();

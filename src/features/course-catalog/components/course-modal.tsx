@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 
 import { DEPT_META, GRADE_SCALE, GRADING_COMPONENT_COLORS } from "../data";
 import { getEdgeFadeOpacity } from "../scroll-fade";
-import type { Course } from "../types";
+import type { Course, Department } from "../types";
 
 type CourseModalProps = {
   course: Course | null;
@@ -15,6 +15,19 @@ function getTeacherInitial(teacher: string) {
   const parts = teacher.trim().split(/\s+/);
   const lastName = parts[parts.length - 1] ?? "?";
   return lastName.charAt(0).toUpperCase();
+}
+
+function DepartmentChip({ department }: { department: Department }) {
+  const meta = DEPT_META[department];
+
+  return (
+    <span
+      className="rounded-full px-2.5 py-1 text-[0.6875rem] font-bold tracking-[0.04em]"
+      style={{ backgroundColor: meta.bg, color: meta.text }}
+    >
+      {department === "Elective" ? "ELECTIVE" : department}
+    </span>
+  );
 }
 
 export function CourseModal({ course, onClose }: CourseModalProps) {
@@ -31,10 +44,9 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     }
 
     const element = scrollRef.current;
-    const descriptionWrap = descriptionWrapRef.current;
     const descriptionText = descriptionTextRef.current;
 
-    if (!element || !descriptionWrap || !descriptionText) {
+    if (!element || !descriptionText) {
       return;
     }
 
@@ -86,7 +98,11 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     return null;
   }
 
-  const dept = DEPT_META[course.dept];
+  const departmentChips = course.departments?.length
+    ? course.departments
+    : course.isElective
+      ? []
+      : [course.dept];
 
   return (
     <div
@@ -101,13 +117,13 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
         className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[18px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
       >
         <div className="shrink-0 border-b border-[var(--uaip-gray-100)] bg-white px-6 py-7 md:px-9 md:py-8">
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <span
-              className="rounded-full px-2.5 py-1 text-[0.6875rem] font-bold tracking-[0.04em]"
-              style={{ backgroundColor: dept.bg, color: dept.text }}
-            >
-              {course.dept}
-            </span>
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div className="flex flex-wrap gap-1.5">
+              {course.isElective ? <DepartmentChip department="Elective" /> : null}
+              {departmentChips.map((department) => (
+                <DepartmentChip key={`${course.id}-${department}`} department={department} />
+              ))}
+            </div>
 
             <button
               type="button"
@@ -124,6 +140,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
           </h2>
 
           <p className="mt-1 text-[0.8125rem] text-[var(--uaip-gray-400)]">
+            {course.code ? `${course.code} · ` : ""}
             {course.credits} credits · {course.type}
           </p>
 
@@ -159,22 +176,28 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
               <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
                 Teachers
               </h3>
-              <div className="mt-2.5 space-y-0.5">
-                {course.teachers.map((teacher) => (
-                  <div
-                    key={teacher}
-                    className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5 text-[0.9375rem] text-[var(--uaip-text-primary)]"
-                  >
-                    <span
-                      className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
-                      style={{ backgroundColor: dept.bg, color: dept.text }}
+              {course.teachers.length > 0 ? (
+                <div className="mt-2.5 space-y-0.5">
+                  {course.teachers.map((teacher) => (
+                    <div
+                      key={teacher}
+                      className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5 text-[0.9375rem] text-[var(--uaip-text-primary)]"
                     >
-                      {getTeacherInitial(teacher)}
-                    </span>
-                    {teacher}
-                  </div>
-                ))}
-              </div>
+                      <span
+                        className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
+                        style={{ backgroundColor: DEPT_META[course.dept].bg, color: DEPT_META[course.dept].text }}
+                      >
+                        {getTeacherInitial(teacher)}
+                      </span>
+                      {teacher}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2.5 text-[0.9375rem] text-[var(--uaip-gray-500)]">
+                  Teacher list will be added with the next data update.
+                </p>
+              )}
             </section>
 
             <section className="mt-6">
@@ -182,47 +205,55 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                 Grading breakdown
               </h3>
 
-              <div className="mt-2.5 space-y-0.5">
-                {course.components.map((component, index) => {
-                  const chipColor =
-                    GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length];
+              {course.components.length > 0 ? (
+                <>
+                  <div className="mt-2.5 space-y-0.5">
+                    {course.components.map((component, index) => {
+                      const chipColor =
+                        GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length];
 
-                  return (
-                    <div
-                      key={component.name}
-                      className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5"
-                    >
-                      <span
-                        className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
-                        style={{ color: chipColor, backgroundColor: `${chipColor}20` }}
-                      >
-                        {component.weight}%
-                      </span>
-                      <span className="text-[0.9375rem] text-[var(--uaip-gray-700)]">
-                        {component.name}
-                      </span>
+                      return (
+                        <div
+                          key={component.name}
+                          className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5"
+                        >
+                          <span
+                            className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
+                            style={{ color: chipColor, backgroundColor: `${chipColor}20` }}
+                          >
+                            {component.weight}%
+                          </span>
+                          <span className="text-[0.9375rem] text-[var(--uaip-gray-700)]">
+                            {component.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-3.5 rounded-[10px] bg-[var(--uaip-gray-50)] p-3">
+                    <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
+                      Standard grading scale
+                    </h4>
+
+                    <div className="flex flex-wrap gap-2">
+                      {GRADE_SCALE.map((item) => (
+                        <span
+                          key={item.grade}
+                          className="rounded-full px-2.5 py-1 text-xs font-bold"
+                          style={{ color: item.color, backgroundColor: `${item.color}20` }}
+                        >
+                          {item.grade} · {item.range}
+                        </span>
+                      ))}
                     </div>
-                  );
-                })}
-              </div>
-
-              <div className="mt-3.5 rounded-[10px] bg-[var(--uaip-gray-50)] p-3">
-                <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
-                  Standard grading scale
-                </h4>
-
-                <div className="flex flex-wrap gap-2">
-                  {GRADE_SCALE.map((item) => (
-                    <span
-                      key={item.grade}
-                      className="rounded-full px-2.5 py-1 text-xs font-bold"
-                      style={{ color: item.color, backgroundColor: `${item.color}20` }}
-                    >
-                      {item.grade} · {item.range}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                  </div>
+                </>
+              ) : (
+                <p className="mt-2.5 text-[0.9375rem] text-[var(--uaip-gray-500)]">
+                  Detailed grading components are not published in this dataset yet.
+                </p>
+              )}
             </section>
 
             <section className="mt-6">
@@ -230,16 +261,22 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                 Skills you&apos;ll gain
               </h3>
 
-              <div className="mt-2.5 flex flex-wrap gap-2">
-                {course.outcomes.map((outcome) => (
-                  <span
-                    key={outcome}
-                    className="rounded-full bg-[var(--uaip-gray-100)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
-                  >
-                    {outcome}
-                  </span>
-                ))}
-              </div>
+              {course.outcomes.length > 0 ? (
+                <div className="mt-2.5 flex flex-wrap gap-2">
+                  {course.outcomes.map((outcome) => (
+                    <span
+                      key={outcome}
+                      className="rounded-full bg-[var(--uaip-gray-100)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
+                    >
+                      {outcome}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-2.5 text-[0.9375rem] text-[var(--uaip-gray-500)]">
+                  Learning outcomes will be added after syllabus-level enrichment.
+                </p>
+              )}
             </section>
           </div>
 

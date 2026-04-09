@@ -25,8 +25,12 @@ export type CourseComponent = {
 };
 
 export type Course = {
-  id: number;
+  id: number | string;
+  offeringId?: string | null;
+  code?: string;
   dept: Department;
+  departments?: Department[];
+  isElective?: boolean;
   grade: StudyGrade;
   name: string;
   teachers: string[];
@@ -35,6 +39,8 @@ export type Course = {
   outcomes: string[];
   components: CourseComponent[];
   description: string;
+  semester?: number | null;
+  electiveGroupCode?: string | null;
 };
 
 export type GradeScaleItem = {
