@@ -7,6 +7,7 @@ import { GradingBar } from "./grading-bar";
 
 type CourseCardProps = {
   course: Course;
+  showDetails: boolean;
   onSelect: (course: Course) => void;
   onOcsClick: (course: Course) => void;
 };
@@ -91,7 +92,7 @@ function getBadgeTone(label: string): ChipTone {
   return { bg: "#f3f4f6", text: "#4b5563" };
 }
 
-export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
+export function CourseCard({ course, showDetails, onSelect, onOcsClick }: CourseCardProps) {
   const teacherPreview =
     course.teachers.length > 0
       ? course.teachers.length > 1
@@ -163,17 +164,21 @@ export function CourseCard({ course, onSelect, onOcsClick }: CourseCardProps) {
         {teacherPreview}
       </p>
 
-      <div className="relative mt-2.5 overflow-hidden text-sm leading-[1.55] text-[var(--uaip-gray-600)]">
-        <p style={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}>
-          {course.description}
-        </p>
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-white/88 to-white"
-        />
-      </div>
+      {showDetails ? (
+        <>
+          <div className="relative mt-2.5 overflow-hidden text-sm leading-[1.55] text-[var(--uaip-gray-600)]">
+            <p style={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical" }}>
+              {course.description}
+            </p>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-white/88 to-white"
+            />
+          </div>
 
-      <GradingBar components={course.components} />
+          <GradingBar components={course.components} />
+        </>
+      ) : null}
     </div>
   );
 }
