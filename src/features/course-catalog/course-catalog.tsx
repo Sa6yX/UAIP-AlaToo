@@ -16,44 +16,6 @@ const ELECTIVES_HINT_TEXT =
   "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
 const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 
-function EyeIcon({ hidden }: { hidden: boolean }) {
-  if (hidden) {
-    return (
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 20 20"
-        className="size-4"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 3l14 14" />
-        <path d="M8.3 8.53A2.5 2.5 0 0 0 11.47 11.7" />
-        <path d="M6.67 6.91A9.8 9.8 0 0 0 2.3 10c1.63 2.67 4.37 4.5 7.7 4.5 1.3 0 2.5-.28 3.57-.77" />
-        <path d="M8.18 3.77A10.56 10.56 0 0 1 10 3.5c3.33 0 6.07 1.83 7.7 4.5a10.9 10.9 0 0 1-2.9 3.23" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 20 20"
-      className="size-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M2.3 10C3.93 7.33 6.67 5.5 10 5.5s6.07 1.83 7.7 4.5c-1.63 2.67-4.37 4.5-7.7 4.5S3.93 12.67 2.3 10Z" />
-      <circle cx="10" cy="10" r="2.5" />
-    </svg>
-  );
-}
-
 function BarsIcon() {
   return (
     <svg
@@ -80,7 +42,7 @@ export function CourseCatalog() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
   const [catalogLoadError, setCatalogLoadError] = useState<string | null>(null);
-  const [showCardDetails, setShowCardDetails] = useState(true);
+  const [showCardDetails, setShowCardDetails] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
@@ -343,13 +305,17 @@ export function CourseCatalog() {
             <button
               type="button"
               onClick={() => setShowCardDetails((current) => !current)}
-              className="flex h-10 items-center justify-center gap-2 rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.88rem] font-medium text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition hover:border-[var(--uaip-gray-300)] md:min-w-[188px]"
+              className="flex h-10 w-10 items-center justify-center rounded-[12px] border text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition"
+              style={{
+                borderColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-gray-200)",
+                backgroundColor: showCardDetails ? "var(--uaip-blue)" : "#ffffff",
+                color: showCardDetails ? "#ffffff" : "var(--uaip-gray-500)",
+              }}
               aria-pressed={showCardDetails}
-              title={showCardDetails ? "Collapse descriptions and grading" : "Show descriptions and grading"}
+              aria-label={showCardDetails ? "Hide card details" : "Show card details"}
+              title={showCardDetails ? "Hide card details" : "Show card details"}
             >
-              <EyeIcon hidden={!showCardDetails} />
               <BarsIcon />
-              <span className="whitespace-nowrap">{showCardDetails ? "Details on" : "Details off"}</span>
             </button>
           </div>
         </section>
