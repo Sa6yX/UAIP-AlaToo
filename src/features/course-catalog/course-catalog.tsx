@@ -16,6 +16,63 @@ const ELECTIVES_HINT_TEXT =
   "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
 const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
 
+function EyeIcon({ hidden }: { hidden: boolean }) {
+  if (hidden) {
+    return (
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="size-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M3 3l14 14" />
+        <path d="M8.3 8.53A2.5 2.5 0 0 0 11.47 11.7" />
+        <path d="M6.67 6.91A9.8 9.8 0 0 0 2.3 10c1.63 2.67 4.37 4.5 7.7 4.5 1.3 0 2.5-.28 3.57-.77" />
+        <path d="M8.18 3.77A10.56 10.56 0 0 1 10 3.5c3.33 0 6.07 1.83 7.7 4.5a10.9 10.9 0 0 1-2.9 3.23" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2.3 10C3.93 7.33 6.67 5.5 10 5.5s6.07 1.83 7.7 4.5c-1.63 2.67-4.37 4.5-7.7 4.5S3.93 12.67 2.3 10Z" />
+      <circle cx="10" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+function BarsIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 5h12" />
+      <path d="M4 10h12" />
+      <path d="M4 15h8" />
+    </svg>
+  );
+}
+
 export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
@@ -23,6 +80,7 @@ export function CourseCatalog() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
   const [catalogLoadError, setCatalogLoadError] = useState<string | null>(null);
+  const [showCardDetails, setShowCardDetails] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
@@ -258,12 +316,12 @@ export function CourseCatalog() {
 
       <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
         <section className="mb-7">
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-[minmax(0,1.25fr)_220px_220px] md:items-start">
+          <div className="grid grid-cols-3 gap-3 md:grid-cols-[minmax(0,1.25fr)_220px_220px_auto] md:items-start">
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search courses or teachers…"
-              className="col-span-2 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
+              className="col-span-3 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
             />
 
             <FilterSelect
@@ -281,6 +339,18 @@ export function CourseCatalog() {
               placeholder="All sections"
               allLabel="All sections"
             />
+
+            <button
+              type="button"
+              onClick={() => setShowCardDetails((current) => !current)}
+              className="flex h-10 items-center justify-center gap-2 rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.88rem] font-medium text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition hover:border-[var(--uaip-gray-300)] md:min-w-[188px]"
+              aria-pressed={showCardDetails}
+              title={showCardDetails ? "Collapse descriptions and grading" : "Show descriptions and grading"}
+            >
+              <EyeIcon hidden={!showCardDetails} />
+              <BarsIcon />
+              <span className="whitespace-nowrap">{showCardDetails ? "Details on" : "Details off"}</span>
+            </button>
           </div>
         </section>
 
@@ -326,6 +396,7 @@ export function CourseCatalog() {
               <CourseCard
                 key={course.id}
                 course={course}
+                showDetails={showCardDetails}
                 onSelect={handleCourseSelect}
                 onOcsClick={handleOcsClick}
               />
