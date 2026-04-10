@@ -276,9 +276,9 @@ export function CourseCatalog() {
         </div>
       </header>
 
-      <div className="mx-auto w-full max-w-[1200px] px-5 py-8 md:px-6">
-        <section className="mb-7">
-          <div className="grid grid-cols-3 gap-3 md:grid-cols-[minmax(0,1.25fr)_220px_220px_auto] md:items-start">
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-5 md:px-6 md:py-6">
+        <section className="mb-4 md:mb-5">
+          <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_40px] gap-2 md:grid-cols-[minmax(0,1.25fr)_220px_220px_40px] md:items-start md:gap-3">
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -305,7 +305,7 @@ export function CourseCatalog() {
             <button
               type="button"
               onClick={() => setShowCardDetails((current) => !current)}
-              className="flex h-10 w-10 items-center justify-center rounded-[12px] border text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition"
+              className="flex h-10 w-10 items-center justify-center self-stretch rounded-[12px] border text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition"
               style={{
                 borderColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-gray-200)",
                 backgroundColor: showCardDetails ? "var(--uaip-blue)" : "#ffffff",
@@ -320,7 +320,7 @@ export function CourseCatalog() {
           </div>
         </section>
 
-        <section className="mb-7 flex flex-wrap items-center justify-between gap-3 rounded-[14px] bg-[linear-gradient(135deg,#1e3a5f_0%,#2563eb_100%)] px-5 py-4">
+        <section className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[14px] bg-[linear-gradient(135deg,#1e3a5f_0%,#2563eb_100%)] px-4 py-3 md:mb-5 md:px-5 md:py-4">
           <div>
             <p className="text-[0.8125rem] font-bold tracking-[0.06em] text-[#93c5fd]">
               INSTITUTIONAL POLICY
