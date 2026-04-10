@@ -42,7 +42,7 @@ export function CourseCatalog() {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoadingCourses, setIsLoadingCourses] = useState(true);
   const [catalogLoadError, setCatalogLoadError] = useState<string | null>(null);
-  const [showCardDetails, setShowCardDetails] = useState(false);
+  const [showCardDetails, setShowCardDetails] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
