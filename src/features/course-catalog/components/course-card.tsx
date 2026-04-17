@@ -139,7 +139,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
       <div className="mb-3 space-y-2.5">
         <div className="flex items-start justify-between gap-3">
           <div className="relative min-w-0 flex-1">
-            <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5 pr-12">
+            <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5 pr-16">
               {course.isElective ? (
                 <LabelChip
                   label={course.electiveGroupCode || "Elective"}
@@ -152,25 +152,27 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
             </div>
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 w-16"
+              className="pointer-events-none absolute inset-y-0 right-0 w-20"
               style={{
                 background:
-                  "linear-gradient(to left, var(--uaip-surface-0) 32%, rgba(255,255,255,0.98) 58%, rgba(255,255,255,0.94) 74%, transparent 100%)",
+                  "linear-gradient(to left, var(--uaip-surface-0) 46%, rgba(255,255,255,0.99) 68%, rgba(255,255,255,0.96) 82%, transparent 100%)",
               }}
             />
           </div>
 
-          <button
-            type="button"
-            onClick={(event) => {
-              event.stopPropagation();
-              onOcsClick(course);
-            }}
-            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
-          >
-            OCS
-            <ArrowUpRightIcon />
-          </button>
+          <div className="relative z-10 shrink-0 bg-[var(--uaip-surface-0)] pl-3">
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                onOcsClick(course);
+              }}
+              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
+            >
+              OCS
+              <ArrowUpRightIcon />
+            </button>
+          </div>
         </div>
 
         <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
