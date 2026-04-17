@@ -108,6 +108,24 @@ export const PLACEHOLDER_TEACHERS = [
   "Talantbek Abdraimov",
 ] as const;
 
+export function getFallbackTeachersForCourse(course: {
+  id: number | string;
+  code?: string;
+  name: string;
+  isElective?: boolean;
+}) {
+  const input = `${course.code ?? course.name ?? course.id ?? "uaip"}`;
+  const seed = [...input].reduce((hash, char) => {
+    return (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }, 7);
+  const startIndex = seed % PLACEHOLDER_TEACHERS.length;
+  const count = course.isElective ? 1 : (seed % 3 === 0 ? 2 : 1);
+
+  return Array.from({ length: count }, (_, index) => {
+    return PLACEHOLDER_TEACHERS[(startIndex + index) % PLACEHOLDER_TEACHERS.length];
+  });
+}
+
 export const COURSES: Course[] = [
   {
     id: 1,

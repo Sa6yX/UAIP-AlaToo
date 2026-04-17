@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 
-import { DEPT_META, GRADE_SCALE, GRADING_COMPONENT_COLORS } from "../data";
+import { DEPT_META, GRADE_SCALE, GRADING_COMPONENT_COLORS, getFallbackTeachersForCourse } from "../data";
 import { getEdgeFadeOpacity } from "../scroll-fade";
 import type { Course, Department } from "../types";
 
@@ -148,6 +148,8 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
   }
 
   const audienceBadges = getAudienceDepartmentBadges(course);
+  const displayTeachers =
+    course.teachers.length > 0 ? course.teachers : getFallbackTeachersForCourse(course);
 
   return (
     <div
@@ -230,28 +232,22 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
               <h3 className="text-xs font-bold uppercase tracking-[0.08em] text-[var(--uaip-gray-400)]">
                 Teachers
               </h3>
-              {course.teachers.length > 0 ? (
-                <div className="mt-2.5 space-y-2">
-                  {course.teachers.map((teacher) => (
-                    <div
-                      key={teacher}
-                      className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2 text-[0.9375rem] text-[var(--uaip-text-primary)]"
+              <div className="mt-2.5 space-y-2">
+                {displayTeachers.map((teacher) => (
+                  <div
+                    key={teacher}
+                    className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2 text-[0.9375rem] text-[var(--uaip-text-primary)]"
+                  >
+                    <span
+                      className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
+                      style={{ backgroundColor: DEPT_META[course.dept].bg, color: DEPT_META[course.dept].text }}
                     >
-                      <span
-                        className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
-                        style={{ backgroundColor: DEPT_META[course.dept].bg, color: DEPT_META[course.dept].text }}
-                      >
-                        {getTeacherInitial(teacher)}
-                      </span>
-                      {teacher}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="mt-2.5 text-[0.9375rem] text-[var(--uaip-gray-500)]">
-                  Teacher list will be added with the next data update.
-                </p>
-              )}
+                      {getTeacherInitial(teacher)}
+                    </span>
+                    {teacher}
+                  </div>
+                ))}
+              </div>
             </section>
 
             <section className="mt-6">

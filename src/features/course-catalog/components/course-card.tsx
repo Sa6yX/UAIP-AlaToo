@@ -1,6 +1,6 @@
 import type { KeyboardEvent } from "react";
 
-import { DEPT_META } from "../data";
+import { DEPT_META, getFallbackTeachersForCourse } from "../data";
 import type { Course, Department } from "../types";
 
 import { GradingBar } from "./grading-bar";
@@ -106,12 +106,12 @@ function getBadgeTone(label: string): ChipTone {
 }
 
 export function CourseCard({ course, showDetails, onSelect, onOcsClick }: CourseCardProps) {
+  const displayTeachers =
+    course.teachers.length > 0 ? course.teachers : getFallbackTeachersForCourse(course);
   const teacherPreview =
-    course.teachers.length > 0
-      ? course.teachers.length > 1
-        ? `${course.teachers[0]} +${course.teachers.length - 1} more`
-        : course.teachers[0]
-      : "Teacher not assigned yet";
+    displayTeachers.length > 1
+      ? `${displayTeachers[0]} +${displayTeachers.length - 1} more`
+      : displayTeachers[0];
   const audienceBadges = getAudienceDepartmentBadges(course);
   const metaItems = [
     course.code ? { label: course.code, color: "#2563eb" } : null,
