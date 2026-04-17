@@ -125,25 +125,20 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
-      className="group relative cursor-pointer rounded-[16px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-0)] px-5 py-5 text-left shadow-[0_12px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:border-[var(--uaip-border-strong)] hover:shadow-[0_18px_38px_rgba(17,17,17,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
+      className="group relative cursor-pointer rounded-[16px] bg-[var(--uaip-surface-0)] px-5 py-5 text-left shadow-[0_12px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(17,17,17,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
       <div className="mb-3 space-y-2.5">
-        <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5">
-          {course.isElective ? (
-            <LabelChip
-              label={course.electiveGroupCode || "Elective"}
-              tone={getElectiveGroupTone(course.electiveGroupCode)}
-            />
-          ) : null}
-          {audienceBadges.map((badge) => (
-            <LabelChip key={`${course.id}-${badge}`} label={badge} tone={getBadgeTone(badge)} />
-          ))}
-        </div>
-
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-            <MetaPill>{course.credits} credits</MetaPill>
-            <MetaPill>{semesterLabel}</MetaPill>
+        <div className="flex items-start justify-between gap-3">
+          <div className="uaip-chip-scroll -mx-1 flex min-w-0 flex-1 flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5">
+            {course.isElective ? (
+              <LabelChip
+                label={course.electiveGroupCode || "Elective"}
+                tone={getElectiveGroupTone(course.electiveGroupCode)}
+              />
+            ) : null}
+            {audienceBadges.map((badge) => (
+              <LabelChip key={`${course.id}-${badge}`} label={badge} tone={getBadgeTone(badge)} />
+            ))}
           </div>
 
           <button
@@ -157,6 +152,11 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
             OCS
             <ArrowUpRightIcon />
           </button>
+        </div>
+
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+          <MetaPill>{course.credits} credits</MetaPill>
+          <MetaPill>{semesterLabel}</MetaPill>
         </div>
       </div>
 
