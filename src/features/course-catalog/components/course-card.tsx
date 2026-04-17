@@ -1,4 +1,4 @@
-import type { KeyboardEvent, ReactNode } from "react";
+import type { KeyboardEvent } from "react";
 
 import { DEPT_META } from "../data";
 import type { Course, Department } from "../types";
@@ -46,10 +46,15 @@ function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
   );
 }
 
-function MetaPill({ children }: { children: ReactNode }) {
+function MetaItem({ label, color }: { label: string; color: string }) {
   return (
-    <span className="rounded-full border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-2)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
-      {children}
+    <span className="inline-flex items-center gap-1.5 text-[0.75rem] font-medium text-[var(--uaip-gray-600)]">
+      <span
+        aria-hidden="true"
+        className="size-1.5 rounded-full"
+        style={{ backgroundColor: color }}
+      />
+      {label}
     </span>
   );
 }
@@ -108,7 +113,11 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
         : course.teachers[0]
       : "Teacher not assigned yet";
   const audienceBadges = getAudienceDepartmentBadges(course);
-  const semesterLabel = course.semester ? `Semester ${course.semester}` : "Curriculum";
+  const metaItems = [
+    course.code ? { label: course.code, color: "#2563eb" } : null,
+    { label: `${course.credits} credits`, color: "#7c3aed" },
+    { label: course.semester ? `Semester ${course.semester}` : "Curriculum", color: "#059669" },
+  ].filter((item): item is { label: string; color: string } => Boolean(item));
 
   const handleOpen = () => onSelect(course);
 
@@ -154,9 +163,10 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
           </button>
         </div>
 
-        <div className="flex min-w-0 flex-wrap items-center gap-1.5">
-          <MetaPill>{course.credits} credits</MetaPill>
-          <MetaPill>{semesterLabel}</MetaPill>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+          {metaItems.map((item) => (
+            <MetaItem key={`${course.id}-${item.label}`} label={item.label} color={item.color} />
+          ))}
         </div>
       </div>
 
@@ -164,10 +174,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
         {course.name}
       </h3>
 
-      <p className="mt-1 text-xs text-[var(--uaip-gray-500)]">
-        {course.code ? `${course.code} · ` : ""}
-        {teacherPreview}
-      </p>
+      <p className="mt-1 text-xs text-[var(--uaip-gray-500)]">{teacherPreview}</p>
 
       {showDetails ? (
         <>
