@@ -48,7 +48,7 @@ function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
 
 function MetaPill({ children }: { children: string }) {
   return (
-    <span className="rounded-full bg-[var(--uaip-gray-100)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
+    <span className="rounded-full bg-[var(--uaip-surface-2)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
       {children}
     </span>
   );
@@ -125,7 +125,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
-      className="group relative cursor-pointer rounded-[14px] bg-white px-5 py-5 text-left shadow-[0_10px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(17,17,17,0.09)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
+      className="group relative cursor-pointer rounded-[16px] bg-[var(--uaip-surface-0)] px-5 py-5 text-left shadow-[0_12px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(17,17,17,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
       <div className="mb-3 space-y-2.5">
         <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5">
@@ -177,7 +177,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
             </p>
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-white/88 to-white"
+              className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-[var(--uaip-surface-0)]/88 to-[var(--uaip-surface-0)]"
             />
           </div>
 

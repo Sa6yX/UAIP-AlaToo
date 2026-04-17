@@ -271,7 +271,7 @@ export function CourseCatalog() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search courses or teachers…"
-              className="col-span-3 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
+              className="col-span-3 h-10 w-full rounded-[12px] bg-[var(--uaip-surface-2)] px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_8px_20px_rgba(17,17,17,0.04)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:bg-[var(--uaip-surface-0)] md:col-span-1"
             />
 
             <FilterSelect
@@ -293,10 +293,9 @@ export function CourseCatalog() {
             <button
               type="button"
               onClick={() => setShowCardDetails((current) => !current)}
-              className="flex h-10 w-10 items-center justify-center self-stretch rounded-[12px] border text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition"
+              className="flex h-10 w-10 items-center justify-center self-stretch rounded-[12px] text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_8px_20px_rgba(17,17,17,0.04)] transition"
               style={{
-                borderColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-gray-200)",
-                backgroundColor: showCardDetails ? "var(--uaip-blue)" : "#ffffff",
+                backgroundColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-surface-2)",
                 color: showCardDetails ? "#ffffff" : "var(--uaip-gray-500)",
               }}
               aria-pressed={showCardDetails}
@@ -329,7 +328,7 @@ export function CourseCatalog() {
         </section>
 
         {catalogLoadError ? (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">⚠️</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               Could not load catalog data
@@ -337,7 +336,7 @@ export function CourseCatalog() {
             <p className="mt-1 text-base">{catalogLoadError}</p>
           </section>
         ) : isLoadingCourses ? (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">⏳</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               Loading course catalog…
@@ -357,7 +356,7 @@ export function CourseCatalog() {
             ))}
           </section>
         ) : (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">🔍</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               No courses found

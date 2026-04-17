@@ -66,7 +66,7 @@ export function FilterSelect<T extends string>({
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="flex h-10 w-full items-center justify-between rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-left text-[0.9rem] font-medium text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition hover:border-[var(--uaip-gray-300)]"
+        className="flex h-10 w-full items-center justify-between rounded-[12px] bg-[var(--uaip-surface-2)] px-3.5 text-left text-[0.9rem] font-medium text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_8px_20px_rgba(17,17,17,0.04)] transition hover:bg-[var(--uaip-surface-3)]"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -79,7 +79,7 @@ export function FilterSelect<T extends string>({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[14px] border border-[var(--uaip-gray-200)] bg-white p-2 shadow-[0_16px_40px_rgba(17,17,17,0.12)]">
+        <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[14px] bg-[var(--uaip-surface-0)] p-2 shadow-[0_18px_40px_rgba(17,17,17,0.12)]">
           <div className="max-h-[260px] overflow-y-auto">
             <button
               type="button"
@@ -89,8 +89,8 @@ export function FilterSelect<T extends string>({
               }}
               className={`flex w-full items-center rounded-[10px] px-3 py-2 text-left text-[0.9rem] transition ${
                 value === ""
-                  ? "bg-[var(--uaip-gray-100)] font-semibold text-[var(--uaip-text-primary)]"
-                  : "text-[var(--uaip-gray-700)] hover:bg-[var(--uaip-gray-50)]"
+                  ? "bg-[var(--uaip-surface-2)] font-semibold text-[var(--uaip-text-primary)]"
+                  : "text-[var(--uaip-gray-700)] hover:bg-[var(--uaip-surface-1)]"
               }`}
             >
               {allLabel}
@@ -106,8 +106,8 @@ export function FilterSelect<T extends string>({
                 }}
                 className={`mt-1 flex w-full items-center rounded-[10px] px-3 py-2 text-left text-[0.9rem] transition ${
                   value === option
-                    ? "bg-[var(--uaip-gray-100)] font-semibold text-[var(--uaip-text-primary)]"
-                    : "text-[var(--uaip-gray-700)] hover:bg-[var(--uaip-gray-50)]"
+                    ? "bg-[var(--uaip-surface-2)] font-semibold text-[var(--uaip-text-primary)]"
+                    : "text-[var(--uaip-gray-700)] hover:bg-[var(--uaip-surface-1)]"
                 }`}
               >
                 {option}
