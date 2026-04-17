@@ -8,9 +8,11 @@ _Last updated: 2026-04-17_
 ### Latest UI update — 2026-04-17
 
 - removed the standalone top header from the catalog page
-- changed course cards so badges stay on one horizontal row
-- moved `credits`, `semester`, and `OCS` into a dedicated meta row under the badges
-- started shifting the UI away from borders toward layered neutral surfaces for the page, controls, cards, and modals
+- changed course cards so department badges stay in a horizontal scroll row with OCS on the right
+- moved `course code`, `credits`, and `semester` into lightweight text meta with colored bullet markers
+- added a right-edge badge fade / mask so overflowing badges do not visually collide with the OCS button
+- finalized a soft borderless neutral-surface style for cards, controls, and modals; search/select inputs are now white with a slightly darker hover state
+- added deterministic Kyrgyz placeholder teachers so courses without teacher data still render assigned teacher names in cards and modal views
 
 ---
 
