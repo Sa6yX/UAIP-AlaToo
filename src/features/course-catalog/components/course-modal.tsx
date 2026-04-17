@@ -159,7 +159,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[20px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-0)] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+        className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[20px] bg-[var(--uaip-surface-0)] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
       >
         <div className="shrink-0 bg-[var(--uaip-surface-0)] px-6 py-7 md:px-9 md:py-8">
           <div className="mb-5 flex items-start justify-between gap-4">
@@ -178,7 +178,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="grid size-9 place-items-center rounded-full border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-2)] text-xl leading-none text-[var(--uaip-gray-500)] transition hover:border-[var(--uaip-border-strong)] hover:bg-[var(--uaip-surface-3)] hover:text-[var(--uaip-text-primary)]"
+              className="grid size-9 place-items-center rounded-full bg-[var(--uaip-surface-0)] text-xl leading-none text-[var(--uaip-gray-500)] transition hover:bg-[var(--uaip-surface-1)] hover:text-[var(--uaip-text-primary)]"
               aria-label="Close course details"
             >
               ×
@@ -235,7 +235,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                   {course.teachers.map((teacher) => (
                     <div
                       key={teacher}
-                      className="flex items-center gap-2.5 rounded-[12px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-1)] px-3 py-2 text-[0.9375rem] text-[var(--uaip-text-primary)]"
+                      className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2 text-[0.9375rem] text-[var(--uaip-text-primary)]"
                     >
                       <span
                         className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
@@ -269,7 +269,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                       return (
                         <div
                           key={component.name}
-                          className="flex items-center gap-2.5 rounded-[12px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-1)] px-3 py-2"
+                          className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2"
                         >
                           <span
                             className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
@@ -285,7 +285,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                     })}
                   </div>
 
-                  <div className="mt-3.5 rounded-[14px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-1)] p-3.5">
+                  <div className="mt-3.5 rounded-[14px] bg-[var(--uaip-surface-1)] p-3.5">
                     <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
                       Standard grading scale
                     </h4>
@@ -320,7 +320,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                   {course.outcomes.map((outcome) => (
                     <span
                       key={outcome}
-                      className="rounded-full border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-2)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
+                      className="rounded-full bg-[var(--uaip-surface-2)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
                     >
                       {outcome}
                     </span>

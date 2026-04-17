@@ -66,7 +66,7 @@ export function FilterSelect<T extends string>({
       <button
         type="button"
         onClick={() => setIsOpen((current) => !current)}
-        className="flex h-10 w-full items-center justify-between rounded-[12px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-2)] px-3.5 text-left text-[0.9rem] font-medium text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.5),0_8px_20px_rgba(17,17,17,0.04)] transition hover:border-[var(--uaip-border-strong)] hover:bg-[var(--uaip-surface-3)]"
+        className="flex h-10 w-full items-center justify-between rounded-[12px] bg-[var(--uaip-surface-0)] px-3.5 text-left text-[0.9rem] font-medium text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] transition hover:bg-[var(--uaip-surface-1)]"
         aria-haspopup="listbox"
         aria-expanded={isOpen}
       >
@@ -79,7 +79,7 @@ export function FilterSelect<T extends string>({
       </button>
 
       {isOpen ? (
-        <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[14px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-0)] p-2 shadow-[0_18px_40px_rgba(17,17,17,0.12)]">
+        <div className="absolute left-0 right-0 top-full z-30 mt-2 overflow-hidden rounded-[14px] bg-[var(--uaip-surface-0)] p-2 shadow-[0_18px_40px_rgba(17,17,17,0.12)]">
           <div className="max-h-[260px] overflow-y-auto">
             <button
               type="button"
