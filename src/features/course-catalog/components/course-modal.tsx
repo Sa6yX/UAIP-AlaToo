@@ -159,9 +159,9 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[18px] bg-white shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
+        className="grid h-[85vh] w-full max-w-[560px] grid-rows-[auto,minmax(0,1fr)] overflow-hidden rounded-[20px] bg-[var(--uaip-surface-0)] shadow-[0_20px_60px_rgba(0,0,0,0.18)]"
       >
-        <div className="shrink-0 border-b border-[var(--uaip-gray-100)] bg-white px-6 py-7 md:px-9 md:py-8">
+        <div className="shrink-0 bg-[var(--uaip-surface-0)] px-6 py-7 md:px-9 md:py-8">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div className="flex flex-wrap gap-1.5">
               {course.isElective ? (
@@ -178,7 +178,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="text-2xl leading-none text-[var(--uaip-gray-500)] transition hover:text-[var(--uaip-text-primary)]"
+              className="grid size-9 place-items-center rounded-full bg-[var(--uaip-surface-2)] text-xl leading-none text-[var(--uaip-gray-500)] transition hover:bg-[var(--uaip-surface-3)] hover:text-[var(--uaip-text-primary)]"
               aria-label="Close course details"
             >
               ×
@@ -210,9 +210,13 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
             <div
               aria-hidden="true"
               className={cn(
-                "pointer-events-none absolute bottom-0 right-0 h-[1.7em] w-[25%] min-w-[96px] bg-gradient-to-r from-transparent via-white/88 to-white transition-opacity duration-300",
+                "pointer-events-none absolute bottom-0 right-0 h-[1.7em] w-[25%] min-w-[96px] transition-opacity duration-300",
                 isHeaderCondensed ? "opacity-100" : "opacity-0",
               )}
+              style={{
+                background:
+                  "linear-gradient(to right, transparent 0%, rgba(255,255,255,0.88) 58%, var(--uaip-surface-0) 100%)",
+              }}
             />
           </div>
         </div>
@@ -227,11 +231,11 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                 Teachers
               </h3>
               {course.teachers.length > 0 ? (
-                <div className="mt-2.5 space-y-0.5">
+                <div className="mt-2.5 space-y-2">
                   {course.teachers.map((teacher) => (
                     <div
                       key={teacher}
-                      className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5 text-[0.9375rem] text-[var(--uaip-text-primary)]"
+                      className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2 text-[0.9375rem] text-[var(--uaip-text-primary)]"
                     >
                       <span
                         className="grid size-7 place-items-center rounded-full text-[0.8125rem] font-bold"
@@ -257,7 +261,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
               {course.components.length > 0 ? (
                 <>
-                  <div className="mt-2.5 space-y-0.5">
+                  <div className="mt-2.5 space-y-2">
                     {course.components.map((component, index) => {
                       const chipColor =
                         GRADING_COMPONENT_COLORS[index % GRADING_COMPONENT_COLORS.length];
@@ -265,7 +269,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                       return (
                         <div
                           key={component.name}
-                          className="flex items-center gap-2.5 border-b border-[var(--uaip-gray-100)] py-1.5"
+                          className="flex items-center gap-2.5 rounded-[12px] bg-[var(--uaip-surface-1)] px-3 py-2"
                         >
                           <span
                             className="grid size-9 place-items-center rounded-lg text-sm font-extrabold"
@@ -281,7 +285,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                     })}
                   </div>
 
-                  <div className="mt-3.5 rounded-[10px] bg-[var(--uaip-gray-50)] p-3">
+                  <div className="mt-3.5 rounded-[14px] bg-[var(--uaip-surface-1)] p-3.5">
                     <h4 className="mb-2 text-xs font-bold text-[var(--uaip-gray-500)]">
                       Standard grading scale
                     </h4>
@@ -316,7 +320,7 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
                   {course.outcomes.map((outcome) => (
                     <span
                       key={outcome}
-                      className="rounded-full bg-[var(--uaip-gray-100)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
+                      className="rounded-full bg-[var(--uaip-surface-2)] px-3 py-1 text-xs font-medium text-[var(--uaip-gray-700)]"
                     >
                       {outcome}
                     </span>
@@ -332,12 +336,12 @@ export function CourseModal({ course, onClose }: CourseModalProps) {
 
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 top-0 h-[68px] bg-gradient-to-b from-white via-white/92 to-transparent transition-opacity duration-150"
+            className="pointer-events-none absolute inset-x-0 top-0 h-[68px] bg-gradient-to-b from-[var(--uaip-surface-0)] via-[rgba(255,255,255,0.92)] to-transparent transition-opacity duration-150"
             style={{ opacity: fadeOpacity.top }}
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-[96px] bg-gradient-to-t from-white via-white/94 to-transparent transition-opacity duration-150"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-[96px] bg-gradient-to-t from-[var(--uaip-surface-0)] via-[rgba(255,255,255,0.94)] to-transparent transition-opacity duration-150"
             style={{ opacity: fadeOpacity.bottom }}
           />
         </div>

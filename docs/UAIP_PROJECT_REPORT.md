@@ -5,6 +5,13 @@ _Last updated: 2026-04-17_
 > Living handoff document for teammates.
 > Update this file when major product, UX, data-model, or workflow changes happen.
 
+### Latest UI update — 2026-04-17
+
+- removed the standalone top header from the catalog page
+- changed course cards so badges stay on one horizontal row
+- moved `credits`, `semester`, and `OCS` into a dedicated meta row under the badges
+- started shifting the UI away from borders toward layered neutral surfaces for the page, controls, cards, and modals
+
 ---
 
 ## 1. What this project is
@@ -396,6 +403,10 @@ A lot of small refinement work happened over time. Examples include:
 - electives hint moved into popup/modal pattern
 - horizontal filter fade improvements
 - stronger mobile responsiveness
+- header removal for a cleaner first screen
+- one-line badge treatment on cards
+- card meta row separation for credits / semester / OCS
+- neutral layered surface direction replacing visible borders in key UI surfaces
 
 This matters because UAIP is not just “data connected to UI” — it already went through real iterative UI polish.
 

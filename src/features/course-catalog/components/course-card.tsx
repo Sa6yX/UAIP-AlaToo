@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 
 import { DEPT_META } from "../data";
 import type { Course, Department } from "../types";
@@ -46,7 +46,7 @@ function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
   );
 }
 
-function MetaPill({ children }: { children: string }) {
+function MetaPill({ children }: { children: ReactNode }) {
   return (
     <span className="rounded-full bg-[var(--uaip-surface-2)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
       {children}
@@ -177,7 +177,11 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
             </p>
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px] bg-gradient-to-r from-transparent via-[var(--uaip-surface-0)]/88 to-[var(--uaip-surface-0)]"
+              className="pointer-events-none absolute bottom-0 right-0 h-[1.55em] w-[25%] min-w-[84px]"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent 0%, rgba(255,255,255,0.88) 58%, var(--uaip-surface-0) 100%)",
+              }}
             />
           </div>
 
