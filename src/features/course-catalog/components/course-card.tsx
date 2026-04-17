@@ -48,7 +48,7 @@ function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
 
 function MetaPill({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-full bg-[var(--uaip-surface-2)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
+    <span className="rounded-full border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-2)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
       {children}
     </span>
   );
@@ -125,7 +125,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
-      className="group relative cursor-pointer rounded-[16px] bg-[var(--uaip-surface-0)] px-5 py-5 text-left shadow-[0_12px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(17,17,17,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
+      className="group relative cursor-pointer rounded-[16px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-0)] px-5 py-5 text-left shadow-[0_12px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:border-[var(--uaip-border-strong)] hover:shadow-[0_18px_38px_rgba(17,17,17,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
       <div className="mb-3 space-y-2.5">
         <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5">

@@ -21,6 +21,8 @@
   --uaip-surface-1: var(--uaip-neutral-50);
   --uaip-surface-2: var(--uaip-neutral-200);
   --uaip-surface-3: var(--uaip-neutral-300);
+  --uaip-border-subtle: var(--uaip-neutral-300);
+  --uaip-border-strong: var(--uaip-neutral-400);
 
   --uaip-gray-50: var(--uaip-neutral-50);
   --uaip-gray-100: var(--uaip-neutral-100);

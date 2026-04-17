@@ -33,7 +33,7 @@ export function InfoModal({
     >
       <div
         onClick={(event) => event.stopPropagation()}
-        className="w-full max-w-[440px] rounded-[20px] bg-[var(--uaip-surface-0)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:p-7"
+        className="w-full max-w-[440px] rounded-[20px] border border-[var(--uaip-border-subtle)] bg-[var(--uaip-surface-0)] p-6 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:p-7"
       >
         <div className="flex items-start gap-3">
           <span className="text-xl" aria-hidden>
