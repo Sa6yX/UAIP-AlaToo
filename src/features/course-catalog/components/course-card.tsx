@@ -38,10 +38,18 @@ function ArrowUpRightIcon() {
 function LabelChip({ label, tone }: { label: string; tone: ChipTone }) {
   return (
     <span
-      className="rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.04em]"
+      className="shrink-0 rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-[0.04em]"
       style={{ backgroundColor: tone.bg, color: tone.text }}
     >
       {label}
+    </span>
+  );
+}
+
+function MetaPill({ children }: { children: string }) {
+  return (
+    <span className="rounded-full bg-[var(--uaip-gray-100)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-600)]">
+      {children}
     </span>
   );
 }
@@ -100,7 +108,7 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
         : course.teachers[0]
       : "Teacher not assigned yet";
   const audienceBadges = getAudienceDepartmentBadges(course);
-  const showAudienceBadges = course.isElective ? audienceBadges : audienceBadges.slice(0, 3);
+  const semesterLabel = course.semester ? `Semester ${course.semester}` : "Curriculum";
 
   const handleOpen = () => onSelect(course);
 
@@ -117,37 +125,34 @@ export function CourseCard({ course, showDetails, onSelect, onOcsClick }: Course
       tabIndex={0}
       onClick={handleOpen}
       onKeyDown={handleKeyDown}
-      className="group relative cursor-pointer rounded-[14px] border border-[var(--uaip-gray-200)] bg-white px-5 py-5 text-left transition hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(0,0,0,0.09)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
+      className="group relative cursor-pointer rounded-[14px] bg-white px-5 py-5 text-left shadow-[0_10px_30px_rgba(17,17,17,0.05)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_36px_rgba(17,17,17,0.09)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--uaip-blue)]/25"
     >
-      <div className="mb-2.5 flex items-start justify-between gap-3">
-        <div className="flex flex-wrap gap-1.5">
+      <div className="mb-3 space-y-2.5">
+        <div className="uaip-chip-scroll -mx-1 flex flex-nowrap gap-1.5 overflow-x-auto px-1 pb-0.5">
           {course.isElective ? (
             <LabelChip
               label={course.electiveGroupCode || "Elective"}
               tone={getElectiveGroupTone(course.electiveGroupCode)}
             />
           ) : null}
-          {showAudienceBadges.map((badge) => (
+          {audienceBadges.map((badge) => (
             <LabelChip key={`${course.id}-${badge}`} label={badge} tone={getBadgeTone(badge)} />
           ))}
-          {!course.isElective && audienceBadges.length > showAudienceBadges.length ? (
-            <span className="rounded-full bg-[var(--uaip-gray-100)] px-2.5 py-1 text-[0.6875rem] font-semibold text-[var(--uaip-gray-500)]">
-              +{audienceBadges.length - showAudienceBadges.length}
-            </span>
-          ) : null}
         </div>
 
-        <div className="flex items-start gap-2">
-          <span className="pt-1 text-[0.6875rem] text-[var(--uaip-gray-400)]">
-            {course.credits} credits · {course.type}
-          </span>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+            <MetaPill>{course.credits} credits</MetaPill>
+            <MetaPill>{semesterLabel}</MetaPill>
+          </div>
+
           <button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
               onOcsClick(course);
             }}
-            className="inline-flex items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
+            className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[var(--uaip-blue)] px-2.5 py-1 text-[0.6875rem] font-semibold text-white transition hover:bg-[#1d4ed8]"
           >
             OCS
             <ArrowUpRightIcon />

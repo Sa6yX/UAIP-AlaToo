@@ -263,20 +263,8 @@ export function CourseCatalog() {
         className="pointer-events-none fixed inset-x-0 bottom-0 z-40 hidden h-[76px] bg-gradient-to-t from-[var(--uaip-bg)] to-transparent transition-opacity duration-150 lg:block"
         style={{ opacity: pageBottomFadeOpacity }}
       />
-      <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
-        <div className="mx-auto w-full max-w-[1200px]">
-          <div>
-            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--uaip-gray-400)]">
-              ALA-TOO INTERNATIONAL UNIVERSITY / UAIP
-            </p>
-            <h1 className="mt-1 text-[0.92rem] font-bold tracking-[0.12em] text-[var(--uaip-gray-500)] md:text-[1rem]">
-              Course Catalog
-            </h1>
-          </div>
-        </div>
-      </header>
 
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-5 md:px-6 md:py-6">
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6 md:py-7">
         <section className="mb-4 md:mb-5">
           <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_40px] gap-2 md:grid-cols-[minmax(0,1.25fr)_220px_220px_40px] md:items-start md:gap-3">
             <input

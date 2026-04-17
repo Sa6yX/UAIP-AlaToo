@@ -85,6 +85,15 @@ body::-webkit-scrollbar {
   display: none;
 }
 
+.uaip-chip-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.uaip-chip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
 .font-heading {
   font-family: var(--font-plus-jakarta-sans), var(--font-dm-sans), system-ui, sans-serif;
 }
