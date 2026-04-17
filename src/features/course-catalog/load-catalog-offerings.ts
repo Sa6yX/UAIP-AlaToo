@@ -3,6 +3,7 @@ import type { Json } from "@/types/database";
 import type { Database } from "@/types/database";
 
 import type { Course, CourseComponent, Department, StudyGrade } from "./types";
+import { getFallbackTeachersForCourse } from "./data";
 
 type CatalogCardRow = Database["public"]["Views"]["catalog_cards_v1"]["Row"];
 
@@ -185,7 +186,17 @@ export async function loadCatalogCards(): Promise<CatalogCardRow[]> {
 export function mapCatalogCardToCourse(row: CatalogCardRow): Course {
   const isElective = Boolean(row.is_elective);
   const departments = toDepartments(row.program_codes, isElective);
-  const teachers = parseStringArray(row.teachers);
+  const teachers = (() => {
+    const parsed = parseStringArray(row.teachers);
+    return parsed.length > 0
+      ? parsed
+      : getFallbackTeachersForCourse({
+          id: row.browse_id ?? row.course_id ?? row.offering_id ?? crypto.randomUUID(),
+          code: row.course_code ?? undefined,
+          name: row.course_name ?? "Untitled course",
+          isElective,
+        });
+  })();
   const outcomes = parseStringArray(row.outcomes);
   const parsedComponents = parseCourseComponents(row.grading_components);
   const components = parsedComponents.length > 0 ? parsedComponents : buildFallbackGradingComponents(row);

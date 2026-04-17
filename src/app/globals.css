@@ -1,16 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  --uaip-bg: #f8f9fc;
-  --uaip-text-primary: #111111;
-  --uaip-gray-50: #f9fafb;
-  --uaip-gray-100: #f3f4f6;
-  --uaip-gray-200: #e5e7eb;
-  --uaip-gray-300: #d1d5db;
-  --uaip-gray-400: #9ca3af;
-  --uaip-gray-500: #6b7280;
-  --uaip-gray-600: #4b5563;
-  --uaip-gray-700: #374151;
+  --uaip-neutral-0: #ffffff;
+  --uaip-neutral-50: #fafafa;
+  --uaip-neutral-100: #f5f5f5;
+  --uaip-neutral-200: #ebebeb;
+  --uaip-neutral-300: #d4d4d4;
+  --uaip-neutral-400: #a3a3a3;
+  --uaip-neutral-500: #737373;
+  --uaip-neutral-600: #525252;
+  --uaip-neutral-700: #404040;
+  --uaip-neutral-800: #262626;
+  --uaip-neutral-900: #171717;
+  --uaip-neutral-1000: #0a0a0a;
+
+  --uaip-bg: var(--uaip-neutral-100);
+  --uaip-text-primary: var(--uaip-neutral-900);
+  --uaip-text-secondary: var(--uaip-neutral-600);
+  --uaip-surface-0: var(--uaip-neutral-0);
+  --uaip-surface-1: var(--uaip-neutral-50);
+  --uaip-surface-2: var(--uaip-neutral-200);
+  --uaip-surface-3: var(--uaip-neutral-300);
+  --uaip-border-subtle: var(--uaip-neutral-300);
+  --uaip-border-strong: var(--uaip-neutral-400);
+
+  --uaip-gray-50: var(--uaip-neutral-50);
+  --uaip-gray-100: var(--uaip-neutral-100);
+  --uaip-gray-200: var(--uaip-neutral-200);
+  --uaip-gray-300: var(--uaip-neutral-300);
+  --uaip-gray-400: var(--uaip-neutral-400);
+  --uaip-gray-500: var(--uaip-neutral-500);
+  --uaip-gray-600: var(--uaip-neutral-600);
+  --uaip-gray-700: var(--uaip-neutral-700);
+
   --uaip-blue: #2563eb;
   --uaip-purple: #7c3aed;
   --uaip-green: #059669;
@@ -82,6 +104,15 @@ body::-webkit-scrollbar {
 }
 
 .uaip-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.uaip-chip-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.uaip-chip-scroll::-webkit-scrollbar {
   display: none;
 }
 

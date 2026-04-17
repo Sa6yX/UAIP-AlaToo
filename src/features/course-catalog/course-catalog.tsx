@@ -263,27 +263,15 @@ export function CourseCatalog() {
         className="pointer-events-none fixed inset-x-0 bottom-0 z-40 hidden h-[76px] bg-gradient-to-t from-[var(--uaip-bg)] to-transparent transition-opacity duration-150 lg:block"
         style={{ opacity: pageBottomFadeOpacity }}
       />
-      <header className="border-b border-[var(--uaip-gray-200)] bg-white px-5 py-5 md:px-8">
-        <div className="mx-auto w-full max-w-[1200px]">
-          <div>
-            <p className="text-[0.6875rem] font-bold uppercase tracking-[0.12em] text-[var(--uaip-gray-400)]">
-              ALA-TOO INTERNATIONAL UNIVERSITY / UAIP
-            </p>
-            <h1 className="mt-1 text-[0.92rem] font-bold tracking-[0.12em] text-[var(--uaip-gray-500)] md:text-[1rem]">
-              Course Catalog
-            </h1>
-          </div>
-        </div>
-      </header>
 
-      <div className="mx-auto w-full max-w-[1200px] px-4 py-5 md:px-6 md:py-6">
+      <div className="mx-auto w-full max-w-[1200px] px-4 py-6 md:px-6 md:py-7">
         <section className="mb-4 md:mb-5">
           <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_40px] gap-2 md:grid-cols-[minmax(0,1.25fr)_220px_220px_40px] md:items-start md:gap-3">
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Search courses or teachers…"
-              className="col-span-3 h-10 w-full rounded-[12px] border border-[var(--uaip-gray-200)] bg-white px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] outline-none transition placeholder:text-[var(--uaip-gray-400)] focus:border-[var(--uaip-blue)] md:col-span-1"
+              className="col-span-3 h-10 w-full rounded-[12px] bg-[var(--uaip-surface-0)] px-3.5 text-[0.95rem] text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] outline-none transition placeholder:text-[var(--uaip-gray-400)] hover:bg-[var(--uaip-surface-1)] focus:bg-[var(--uaip-surface-0)] md:col-span-1"
             />
 
             <FilterSelect
@@ -305,10 +293,9 @@ export function CourseCatalog() {
             <button
               type="button"
               onClick={() => setShowCardDetails((current) => !current)}
-              className="flex h-10 w-10 items-center justify-center self-stretch rounded-[12px] border text-[var(--uaip-text-primary)] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition"
+              className="flex h-10 w-10 items-center justify-center self-stretch rounded-[12px] text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] transition"
               style={{
-                borderColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-gray-200)",
-                backgroundColor: showCardDetails ? "var(--uaip-blue)" : "#ffffff",
+                backgroundColor: showCardDetails ? "var(--uaip-blue)" : "var(--uaip-surface-0)",
                 color: showCardDetails ? "#ffffff" : "var(--uaip-gray-500)",
               }}
               aria-pressed={showCardDetails}
@@ -341,7 +328,7 @@ export function CourseCatalog() {
         </section>
 
         {catalogLoadError ? (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">⚠️</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               Could not load catalog data
@@ -349,7 +336,7 @@ export function CourseCatalog() {
             <p className="mt-1 text-base">{catalogLoadError}</p>
           </section>
         ) : isLoadingCourses ? (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">⏳</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               Loading course catalog…
@@ -369,7 +356,7 @@ export function CourseCatalog() {
             ))}
           </section>
         ) : (
-          <section className="py-16 text-center text-[var(--uaip-gray-400)]">
+          <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">🔍</p>
             <h3 className="font-heading mt-3 text-[clamp(1.08rem,1.02rem+0.2vw,1.15rem)] font-semibold text-[var(--uaip-gray-600)]">
               No courses found
