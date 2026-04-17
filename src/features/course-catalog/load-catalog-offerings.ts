@@ -3,6 +3,7 @@ import type { Json } from "@/types/database";
 import type { Database } from "@/types/database";
 
 import type { Course, CourseComponent, Department, StudyGrade } from "./types";
+import { PLACEHOLDER_TEACHERS } from "./data";
 
 type CatalogCardRow = Database["public"]["Views"]["catalog_cards_v1"]["Row"];
 
@@ -149,6 +150,24 @@ function buildCourseType(row: CatalogCardRow) {
   return hours;
 }
 
+function createDeterministicSeed(row: CatalogCardRow) {
+  const input = `${row.course_code ?? row.course_name ?? row.offering_id ?? row.course_id ?? "uaip"}`;
+
+  return [...input].reduce((hash, char) => {
+    return (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }, 7);
+}
+
+function buildPlaceholderTeachers(row: CatalogCardRow) {
+  const seed = createDeterministicSeed(row);
+  const startIndex = seed % PLACEHOLDER_TEACHERS.length;
+  const count = row.is_elective ? 1 : (seed % 3 === 0 ? 2 : 1);
+
+  return Array.from({ length: count }, (_, index) => {
+    return PLACEHOLDER_TEACHERS[(startIndex + index) % PLACEHOLDER_TEACHERS.length];
+  });
+}
+
 function buildDescription(row: CatalogCardRow, departmentCodes: Department[]) {
   if (row.description?.trim()) {
     return row.description.trim();
@@ -185,7 +204,10 @@ export async function loadCatalogCards(): Promise<CatalogCardRow[]> {
 export function mapCatalogCardToCourse(row: CatalogCardRow): Course {
   const isElective = Boolean(row.is_elective);
   const departments = toDepartments(row.program_codes, isElective);
-  const teachers = parseStringArray(row.teachers);
+  const teachers = (() => {
+    const parsed = parseStringArray(row.teachers);
+    return parsed.length > 0 ? parsed : buildPlaceholderTeachers(row);
+  })();
   const outcomes = parseStringArray(row.outcomes);
   const parsedComponents = parseCourseComponents(row.grading_components);
   const components = parsedComponents.length > 0 ? parsedComponents : buildFallbackGradingComponents(row);

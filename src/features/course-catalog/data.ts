@@ -75,6 +75,39 @@ export const STUDY_GRADES: StudyGrade[] = ["1st Grade", "2nd Grade", "3rd Grade"
 
 export const GRADING_COMPONENT_COLORS = ["#2563eb", "#7c3aed", "#059669", "#d97706", "#dc2626"];
 
+export const PLACEHOLDER_TEACHERS = [
+  "Aibek Sadykov",
+  "Aizada Tursunova",
+  "Nursultan Ermekov",
+  "Ainura Joldosheva",
+  "Bekzat Ismailov",
+  "Meerim Abdykerimova",
+  "Adilet Toktomamatov",
+  "Nazira Saparbaeva",
+  "Ruslan Temirov",
+  "Kanykei Orozbaeva",
+  "Ulanbek Asanov",
+  "Gulnaz Bekturova",
+  "Mirlan Ryskulov",
+  "Aisuluu Omurbekova",
+  "Tilek Kadyrov",
+  "Jamila Akmatova",
+  "Elzar Nurbekov",
+  "Cholpon Osmonalieva",
+  "Bakyt Doolotov",
+  "Madina Sydykova",
+  "Nurlan Kubanychbekov",
+  "Begimai Sulaimanova",
+  "Arsen Maratov",
+  "Asel Jumalieva",
+  "Temirlan Kochkorov",
+  "Aigerim Musuralieva",
+  "Ernis Baryktabasov",
+  "Kunduzbek Mambetov",
+  "Alina Karypbekova",
+  "Talantbek Abdraimov",
+] as const;
+
 export const COURSES: Course[] = [
   {
     id: 1,
