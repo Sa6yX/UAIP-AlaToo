@@ -15,6 +15,29 @@ const ELECTIVES_HINT_STORAGE_KEY = "uaip-electives-hint-dismissed";
 const ELECTIVES_HINT_TEXT =
   "Electives are open to all departments. You choose one from the full list each semester. Review the grading breakdown and learning outcomes before choosing.";
 const OCS_COMING_SOON_TEXT = "OCS will be connected soon.";
+const PHONE_PAGE_SIZE = 6;
+const TABLET_PAGE_SIZE = 8;
+const DESKTOP_PAGE_SIZE = 9;
+const TABLET_BREAKPOINT = 768;
+const DESKTOP_BREAKPOINT = 1024;
+
+function getCoursesPerPage(viewportWidth: number) {
+  if (viewportWidth >= DESKTOP_BREAKPOINT) {
+    return DESKTOP_PAGE_SIZE;
+  }
+
+  if (viewportWidth >= TABLET_BREAKPOINT) {
+    return TABLET_PAGE_SIZE;
+  }
+
+  return PHONE_PAGE_SIZE;
+}
+
+const paginationButtonClassName =
+  "inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--uaip-surface-0)] px-3 text-sm font-semibold text-[var(--uaip-gray-600)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] transition hover:bg-[var(--uaip-surface-1)] hover:text-[var(--uaip-text-primary)] disabled:pointer-events-none disabled:opacity-45";
+
+const paginationStatusClassName =
+  "inline-flex h-10 min-w-[84px] shrink-0 items-center justify-center rounded-[12px] bg-[var(--uaip-surface-0)] px-4 text-sm font-semibold text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)]";
 
 function BarsIcon() {
   return (
@@ -35,6 +58,40 @@ function BarsIcon() {
   );
 }
 
+function ChevronLeftIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12.5 5.5L8 10l4.5 4.5" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.5 5.5L12 10l-4.5 4.5" />
+    </svg>
+  );
+}
+
 export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
@@ -47,6 +104,10 @@ export function CourseCatalog() {
   const [pendingCourse, setPendingCourse] = useState<Course | null>(null);
   const [showElectivesHintModal, setShowElectivesHintModal] = useState(false);
   const [showOcsSoonModal, setShowOcsSoonModal] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [coursesPerPage, setCoursesPerPage] = useState(() =>
+    typeof window === "undefined" ? DESKTOP_PAGE_SIZE : getCoursesPerPage(window.innerWidth),
+  );
   const [neverShowElectivesHint, setNeverShowElectivesHint] = useState(false);
   const [electivesHintDismissed, setElectivesHintDismissed] = useState(
     () =>
@@ -136,6 +197,20 @@ export function CourseCatalog() {
   }, []);
 
   useEffect(() => {
+    const updateCoursesPerPage = () => {
+      setCoursesPerPage(getCoursesPerPage(window.innerWidth));
+    };
+
+    updateCoursesPerPage();
+
+    window.addEventListener("resize", updateCoursesPerPage);
+
+    return () => {
+      window.removeEventListener("resize", updateCoursesPerPage);
+    };
+  }, []);
+
+  useEffect(() => {
     const updatePageFadeState = () => {
       const scrollTop = window.scrollY || document.documentElement.scrollTop;
       const viewportHeight = window.innerHeight;
@@ -206,6 +281,28 @@ export function CourseCatalog() {
       return matchDepartment && matchSearch && matchGrade;
     });
   }, [activeDept, activeGrade, courses, search]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeDept, activeGrade, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredCourses.length / coursesPerPage));
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
+
+  const paginatedCourses = useMemo(() => {
+    const pageStart = (currentPage - 1) * coursesPerPage;
+
+    return filteredCourses.slice(pageStart, pageStart + coursesPerPage);
+  }, [coursesPerPage, currentPage, filteredCourses]);
+
+  const visiblePageStart = filteredCourses.length === 0 ? 0 : (currentPage - 1) * coursesPerPage + 1;
+  const visiblePageEnd =
+    filteredCourses.length === 0
+      ? 0
+      : Math.min(currentPage * coursesPerPage, filteredCourses.length);
 
   const openElectivesHintModal = (nextCourse: Course | null = null) => {
     if (electivesHintDismissed) {
@@ -344,17 +441,57 @@ export function CourseCatalog() {
             <p className="mt-1 text-base">Fetching live data from UAIP database</p>
           </section>
         ) : filteredCourses.length > 0 ? (
-          <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
-            {filteredCourses.map((course) => (
-              <CourseCard
-                key={course.id}
-                course={course}
-                showDetails={showCardDetails}
-                onSelect={handleCourseSelect}
-                onOcsClick={handleOcsClick}
-              />
-            ))}
-          </section>
+          <>
+            <section className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-[18px]">
+              {paginatedCourses.map((course) => (
+                <CourseCard
+                  key={course.id}
+                  course={course}
+                  showDetails={showCardDetails}
+                  onSelect={handleCourseSelect}
+                  onOcsClick={handleOcsClick}
+                />
+              ))}
+            </section>
+
+            {totalPages > 1 ? (
+              <section className="mt-5 md:mt-6">
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm text-[var(--uaip-gray-500)]">
+                    Showing {visiblePageStart}–{visiblePageEnd} of {filteredCourses.length} courses
+                  </p>
+
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Go to previous page"
+                      className={`${paginationButtonClassName} gap-1.5 pl-2.5 pr-3`}
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    >
+                      <ChevronLeftIcon />
+                      Back
+                    </button>
+
+                    <div className={paginationStatusClassName}>
+                      {currentPage}/{totalPages}
+                    </div>
+
+                    <button
+                      type="button"
+                      aria-label="Go to next page"
+                      className={`${paginationButtonClassName} gap-1.5 pl-3 pr-2.5`}
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    >
+                      Next
+                      <ChevronRightIcon />
+                    </button>
+                  </div>
+                </div>
+              </section>
+            ) : null}
+          </>
         ) : (
           <section className="rounded-[18px] bg-[var(--uaip-surface-1)] py-16 text-center text-[var(--uaip-gray-400)] shadow-[0_12px_30px_rgba(17,17,17,0.04)]">
             <p className="text-3xl">🔍</p>
