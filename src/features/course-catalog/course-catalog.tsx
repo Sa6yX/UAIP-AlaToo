@@ -58,6 +58,40 @@ function BarsIcon() {
   );
 }
 
+function ChevronLeftIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12.5 5.5L8 10l4.5 4.5" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className="size-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M7.5 5.5L12 10l-4.5 4.5" />
+    </svg>
+  );
+}
+
 export function CourseCatalog() {
   const [activeDept, setActiveDept] = useState<DepartmentFilter>("All");
   const [activeGrade, setActiveGrade] = useState<StudyGrade | "">("");
@@ -431,10 +465,11 @@ export function CourseCatalog() {
                     <button
                       type="button"
                       aria-label="Go to previous page"
-                      className={paginationButtonClassName}
+                      className={`${paginationButtonClassName} gap-1.5 pl-2.5 pr-3`}
                       disabled={currentPage === 1}
                       onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                     >
+                      <ChevronLeftIcon />
                       Back
                     </button>
 
@@ -445,11 +480,12 @@ export function CourseCatalog() {
                     <button
                       type="button"
                       aria-label="Go to next page"
-                      className={paginationButtonClassName}
+                      className={`${paginationButtonClassName} gap-1.5 pl-3 pr-2.5`}
                       disabled={currentPage === totalPages}
                       onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                     >
                       Next
+                      <ChevronRightIcon />
                     </button>
                   </div>
                 </div>
