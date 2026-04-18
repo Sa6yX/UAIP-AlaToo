@@ -69,10 +69,10 @@ function getPaginationTokens(currentPage: number, totalPages: number): Paginatio
 }
 
 const paginationButtonClassName =
-  "inline-flex h-10 min-w-10 items-center justify-center rounded-[12px] border border-[var(--uaip-line)] bg-[var(--uaip-surface-0)] px-3 text-sm font-semibold text-[var(--uaip-gray-600)] shadow-[0_8px_20px_rgba(17,17,17,0.04)] transition hover:-translate-y-0.5 hover:border-[var(--uaip-blue)]/30 hover:text-[var(--uaip-text-primary)] disabled:pointer-events-none disabled:opacity-45";
+  "inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--uaip-surface-0)] px-3 text-sm font-semibold text-[var(--uaip-gray-600)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] transition hover:bg-[var(--uaip-surface-1)] hover:text-[var(--uaip-text-primary)] disabled:pointer-events-none disabled:opacity-45";
 
 const paginationActiveButtonClassName =
-  "border-[var(--uaip-blue)] bg-[var(--uaip-blue)] text-white shadow-[0_10px_24px_rgba(37,99,235,0.28)] hover:border-[var(--uaip-blue)] hover:bg-[var(--uaip-blue)] hover:text-white";
+  "bg-[var(--uaip-blue)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_20px_rgba(37,99,235,0.24)] hover:bg-[var(--uaip-blue)] hover:text-white";
 
 function BarsIcon() {
   return (
@@ -460,61 +460,67 @@ export function CourseCatalog() {
             </section>
 
             {totalPages > 1 ? (
-              <section className="mt-5 flex flex-col items-center gap-3 md:mt-6">
-                <p className="text-sm text-[var(--uaip-gray-500)]">
-                  Showing {visiblePageStart}–{visiblePageEnd} of {filteredCourses.length} courses
-                </p>
+              <section className="mt-5 md:mt-6">
+                <div className="overflow-x-auto pb-1">
+                  <div className="mx-auto inline-flex min-w-max items-center gap-2 rounded-[16px] bg-[var(--uaip-surface-1)] px-3 py-3 shadow-[0_12px_30px_rgba(17,17,17,0.04)] md:px-4">
+                    <p className="mr-1 shrink-0 text-sm text-[var(--uaip-gray-500)]">
+                      Showing {visiblePageStart}–{visiblePageEnd} of {filteredCourses.length}
+                    </p>
 
-                <Pagination size="sm" className="w-full justify-center">
-                  <Pagination.Content className="flex flex-wrap items-center justify-center gap-2">
-                    <Pagination.Item>
-                      <Pagination.Previous
-                        aria-label="Go to previous page"
-                        className={`${paginationButtonClassName} gap-1.5 pr-3`}
-                        isDisabled={currentPage === 1}
-                        onPress={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                      >
-                        <Pagination.PreviousIcon className="text-current" />
-                        Prev
-                      </Pagination.Previous>
-                    </Pagination.Item>
-
-                    {paginationTokens.map((token, index) =>
-                      token === "ellipsis" ? (
-                        <Pagination.Item key={`ellipsis-${index}`}>
-                          <Pagination.Ellipsis className="flex h-10 min-w-8 items-center justify-center text-sm font-semibold text-[var(--uaip-gray-400)]" />
-                        </Pagination.Item>
-                      ) : (
-                        <Pagination.Item key={token}>
-                          <Pagination.Link
-                            aria-label={`Go to page ${token}`}
-                            className={`${paginationButtonClassName} ${token === currentPage ? paginationActiveButtonClassName : ""}`}
-                            isActive={token === currentPage}
-                            onPress={() => setCurrentPage(token)}
+                    <Pagination size="sm" className="shrink-0">
+                      <Pagination.Content className="flex flex-nowrap items-center gap-2">
+                        <Pagination.Item>
+                          <Pagination.Previous
+                            aria-label="Go to previous page"
+                            className={`${paginationButtonClassName} gap-1.5 pr-3`}
+                            isDisabled={currentPage === 1}
+                            onPress={() => setCurrentPage((page) => Math.max(1, page - 1))}
                           >
-                            {token}
-                          </Pagination.Link>
+                            <Pagination.PreviousIcon className="text-current" />
+                            Prev
+                          </Pagination.Previous>
                         </Pagination.Item>
-                      ),
-                    )}
 
-                    <Pagination.Item>
-                      <Pagination.Next
-                        aria-label="Go to next page"
-                        className={`${paginationButtonClassName} gap-1.5 pl-3`}
-                        isDisabled={currentPage === totalPages}
-                        onPress={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                      >
-                        Next
-                        <Pagination.NextIcon className="text-current" />
-                      </Pagination.Next>
-                    </Pagination.Item>
-                  </Pagination.Content>
+                        {paginationTokens.map((token, index) =>
+                          token === "ellipsis" ? (
+                            <Pagination.Item key={`ellipsis-${index}`}>
+                              <Pagination.Ellipsis className="flex h-10 min-w-6 shrink-0 items-center justify-center px-1 text-sm font-semibold text-[var(--uaip-gray-400)]" />
+                            </Pagination.Item>
+                          ) : (
+                            <Pagination.Item key={token}>
+                              <Pagination.Link
+                                aria-label={`Go to page ${token}`}
+                                className={`${paginationButtonClassName} ${token === currentPage ? paginationActiveButtonClassName : ""}`}
+                                isActive={token === currentPage}
+                                onPress={() => setCurrentPage(token)}
+                              >
+                                {token}
+                              </Pagination.Link>
+                            </Pagination.Item>
+                          ),
+                        )}
 
-                  <Pagination.Summary className="mt-3 text-center text-sm text-[var(--uaip-gray-500)]">
-                    Page {currentPage} of {totalPages}
-                  </Pagination.Summary>
-                </Pagination>
+                        <Pagination.Item>
+                          <Pagination.Next
+                            aria-label="Go to next page"
+                            className={`${paginationButtonClassName} gap-1.5 pl-3`}
+                            isDisabled={currentPage === totalPages}
+                            onPress={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                          >
+                            Next
+                            <Pagination.NextIcon className="text-current" />
+                          </Pagination.Next>
+                        </Pagination.Item>
+                      </Pagination.Content>
+                    </Pagination>
+
+                    <Pagination size="sm" className="shrink-0">
+                      <Pagination.Summary className="shrink-0 text-sm text-[var(--uaip-gray-500)]">
+                        {currentPage} / {totalPages}
+                      </Pagination.Summary>
+                    </Pagination>
+                  </div>
+                </div>
               </section>
             ) : null}
           </>
