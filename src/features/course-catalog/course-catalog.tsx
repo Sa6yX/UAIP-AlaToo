@@ -1,6 +1,5 @@
 "use client";
 
-import { Pagination } from "@heroui/react";
 import { useEffect, useMemo, useState } from "react";
 
 import { DEPARTMENTS, GRADE_SCALE, STUDY_GRADES } from "./data";
@@ -22,8 +21,6 @@ const DESKTOP_PAGE_SIZE = 9;
 const TABLET_BREAKPOINT = 768;
 const DESKTOP_BREAKPOINT = 1024;
 
-type PaginationToken = number | "ellipsis";
-
 function getCoursesPerPage(viewportWidth: number) {
   if (viewportWidth >= DESKTOP_BREAKPOINT) {
     return DESKTOP_PAGE_SIZE;
@@ -36,43 +33,11 @@ function getCoursesPerPage(viewportWidth: number) {
   return PHONE_PAGE_SIZE;
 }
 
-function getPaginationTokens(currentPage: number, totalPages: number): PaginationToken[] {
-  if (totalPages <= 7) {
-    return Array.from({ length: totalPages }, (_, index) => index + 1);
-  }
-
-  if (currentPage <= 4) {
-    return [1, 2, 3, 4, 5, "ellipsis", totalPages];
-  }
-
-  if (currentPage >= totalPages - 3) {
-    return [
-      1,
-      "ellipsis",
-      totalPages - 4,
-      totalPages - 3,
-      totalPages - 2,
-      totalPages - 1,
-      totalPages,
-    ];
-  }
-
-  return [
-    1,
-    "ellipsis",
-    currentPage - 1,
-    currentPage,
-    currentPage + 1,
-    "ellipsis",
-    totalPages,
-  ];
-}
-
 const paginationButtonClassName =
   "inline-flex h-10 min-w-10 shrink-0 items-center justify-center rounded-[12px] bg-[var(--uaip-surface-0)] px-3 text-sm font-semibold text-[var(--uaip-gray-600)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)] transition hover:bg-[var(--uaip-surface-1)] hover:text-[var(--uaip-text-primary)] disabled:pointer-events-none disabled:opacity-45";
 
-const paginationActiveButtonClassName =
-  "bg-[var(--uaip-blue)] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_20px_rgba(37,99,235,0.24)] hover:bg-[var(--uaip-blue)] hover:text-white";
+const paginationStatusClassName =
+  "inline-flex h-10 min-w-[84px] shrink-0 items-center justify-center rounded-[12px] bg-[var(--uaip-surface-0)] px-4 text-sm font-semibold text-[var(--uaip-text-primary)] shadow-[inset_0_1px_0_rgba(255,255,255,0.65),0_8px_20px_rgba(17,17,17,0.04)]";
 
 function BarsIcon() {
   return (
@@ -304,10 +269,6 @@ export function CourseCatalog() {
     filteredCourses.length === 0
       ? 0
       : Math.min(currentPage * coursesPerPage, filteredCourses.length);
-  const paginationTokens = useMemo(
-    () => getPaginationTokens(currentPage, totalPages),
-    [currentPage, totalPages],
-  );
 
   const openElectivesHintModal = (nextCourse: Course | null = null) => {
     if (electivesHintDismissed) {
@@ -461,64 +422,35 @@ export function CourseCatalog() {
 
             {totalPages > 1 ? (
               <section className="mt-5 md:mt-6">
-                <div className="overflow-x-auto pb-1">
-                  <div className="mx-auto inline-flex min-w-max items-center gap-2 rounded-[16px] bg-[var(--uaip-surface-1)] px-3 py-3 shadow-[0_12px_30px_rgba(17,17,17,0.04)] md:px-4">
-                    <p className="mr-1 shrink-0 text-sm text-[var(--uaip-gray-500)]">
-                      Showing {visiblePageStart}–{visiblePageEnd} of {filteredCourses.length}
-                    </p>
+                <div className="flex flex-col items-center gap-3">
+                  <p className="text-sm text-[var(--uaip-gray-500)]">
+                    Showing {visiblePageStart}–{visiblePageEnd} of {filteredCourses.length} courses
+                  </p>
 
-                    <Pagination size="sm" className="shrink-0">
-                      <Pagination.Content className="flex flex-nowrap items-center gap-2">
-                        <Pagination.Item>
-                          <Pagination.Previous
-                            aria-label="Go to previous page"
-                            className={`${paginationButtonClassName} gap-1.5 pr-3`}
-                            isDisabled={currentPage === 1}
-                            onPress={() => setCurrentPage((page) => Math.max(1, page - 1))}
-                          >
-                            <Pagination.PreviousIcon className="text-current" />
-                            Prev
-                          </Pagination.Previous>
-                        </Pagination.Item>
+                  <div className="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      aria-label="Go to previous page"
+                      className={paginationButtonClassName}
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                    >
+                      Back
+                    </button>
 
-                        {paginationTokens.map((token, index) =>
-                          token === "ellipsis" ? (
-                            <Pagination.Item key={`ellipsis-${index}`}>
-                              <Pagination.Ellipsis className="flex h-10 min-w-6 shrink-0 items-center justify-center px-1 text-sm font-semibold text-[var(--uaip-gray-400)]" />
-                            </Pagination.Item>
-                          ) : (
-                            <Pagination.Item key={token}>
-                              <Pagination.Link
-                                aria-label={`Go to page ${token}`}
-                                className={`${paginationButtonClassName} ${token === currentPage ? paginationActiveButtonClassName : ""}`}
-                                isActive={token === currentPage}
-                                onPress={() => setCurrentPage(token)}
-                              >
-                                {token}
-                              </Pagination.Link>
-                            </Pagination.Item>
-                          ),
-                        )}
+                    <div className={paginationStatusClassName}>
+                      {currentPage}/{totalPages}
+                    </div>
 
-                        <Pagination.Item>
-                          <Pagination.Next
-                            aria-label="Go to next page"
-                            className={`${paginationButtonClassName} gap-1.5 pl-3`}
-                            isDisabled={currentPage === totalPages}
-                            onPress={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
-                          >
-                            Next
-                            <Pagination.NextIcon className="text-current" />
-                          </Pagination.Next>
-                        </Pagination.Item>
-                      </Pagination.Content>
-                    </Pagination>
-
-                    <Pagination size="sm" className="shrink-0">
-                      <Pagination.Summary className="shrink-0 text-sm text-[var(--uaip-gray-500)]">
-                        {currentPage} / {totalPages}
-                      </Pagination.Summary>
-                    </Pagination>
+                    <button
+                      type="button"
+                      aria-label="Go to next page"
+                      className={paginationButtonClassName}
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+                    >
+                      Next
+                    </button>
                   </div>
                 </div>
               </section>
