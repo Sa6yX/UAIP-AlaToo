@@ -379,16 +379,6 @@ Purpose:
 - reduce visible information density when needed
 - toggle whether cards show heavier detail like descriptions and grading previews
 
-### Maze snippet
-Maze heatmap / usability-testing snippet was added to the site.
-
-Purpose:
-
-- support usability testing
-- collect behavior insights for refinement
-
----
-
 ## 12. Important UI/UX work already done
 
 A lot of small refinement work happened over time. Examples include:
@@ -450,7 +440,6 @@ In practical terms, the team has already done the following:
 - built import pipeline for markdown curriculum data
 - switched frontend from mock data to live DB-backed data
 - expanded the project beyond the initial COM-only scope
-- prepared the site for usability testing with Maze
 - established a preview/production branch workflow
 
 ---
@@ -481,7 +470,7 @@ Potential future improvements:
 - move beyond passive catalog toward more actionable academic flows
 
 ### Research / validation
-- run Maze tests with students
+- run usability tests with students
 - collect confusion points
 - refine based on actual user behavior
 
@@ -576,7 +565,6 @@ At this point UAIP is:
 - visually quite refined
 - backed by real Supabase data
 - expanded beyond the initial smaller scope
-- prepared for usability testing via Maze
 - iterated many times in UI
 - viable as a strong academic catalog prototype
 
